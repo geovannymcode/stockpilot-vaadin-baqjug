@@ -1,0 +1,74 @@
+site_name: "StockPilot: inventario en Java puro con Vaadin Flow"
+site_description: "Guía paso a paso para construir un catálogo de inventario con Vaadin Flow, Spring Boot y arquitectura package-by-feature."
+site_author: "Geovanny Mendoza"
+site_url: "https://geovannymcode.github.io/stockpilot-vaadin-baqjug/"
+
+repo_name: "geovannymcode/stockpilot-vaadin-baqjug"
+repo_url: "https://github.com/geovannymcode/stockpilot-vaadin-baqjug"
+
+theme:
+  name: material
+  language: es
+  palette:
+    - scheme: default
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/weather-night
+        name: Cambiar a modo oscuro
+    - scheme: slate
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/weather-sunny
+        name: Cambiar a modo claro
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+nav:
+  - Inicio: index.md
+  - Sesiones:
+      - "Sesión 0 — El problema, por qué Vaadin y el setup": sesion_0.md
+      - "Sesión 1 — El proyecto y package-by-feature": sesion_1.md
+      - "Sesión 2 — Grid y búsqueda reactiva con Signals": sesion_2.md
+      - "Sesión 3 — KPIs con Signals computados": sesion_3.md
+      - "Sesión 4 — Formulario, Binder y validación": sesion_4.md
+      - "Sesión 5 — Guardar, descartar, alta y baja": sesion_5.md
+      - "Sesión 6 — Backend real con Spring Data JPA": sesion_6.md
+      - "Sesión 7 — Navegación y una segunda feature": sesion_7.md
+      - "Sesión 8 — Theming, CSS y marca propia": sesion_8.md
+  - Referencias: referencias.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/geovannymcode
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/geovannycode/
