@@ -39,4 +39,3 @@ mkdocs.yml
 El proyecto de código en sí (el que vas a construir siguiendo esta guía)
 es un repo Maven aparte  -  esta guía no lo incluye como código listo para
 correr, la idea es que lo construyas tú mismo, sesión por sesión.
-# stockpilot-vaadin-baqjug
