@@ -92,7 +92,7 @@ Elegimos Vaadin por tres razones concretas:
 
 ---
 
-## Parte 3  -  Los conceptos en dos minutos
+## Parte 3 - Los conceptos en dos minutos
 
 Dos ideas van a aparecer una y otra vez en esta guía:
 
@@ -159,6 +159,23 @@ La Community Edition alcanza: [jetbrains.com/idea](https://www.jetbrains.com/ide
     reiniciar el servidor. No es obligatorio para seguir la guía, pero
     acorta muchísimo el ciclo de prueba-y-error de cada sesión.
 
+### Visual Studio Code (si vas a usarlo en vez de un IDE de JetBrains)
+
+Si tu equipo usa VS Code, instala estos dos packs de extensiones desde el
+Marketplace antes de la Sesión 1:
+
+- **Extension Pack for Java** (Microsoft)  -  soporte del lenguaje, debugger
+  y ejecución de proyectos Maven/Gradle.
+- **Spring Boot Extension Pack** (VMware)  -  autocompletado de
+  `application.properties`, navegación de beans y ejecución de
+  aplicaciones Spring Boot.
+
+!!! tip "Los dos packs son necesarios, no alcanza con uno solo"
+    El pack de Java te da el soporte base del lenguaje; el de Spring Boot
+    añade todo lo específico del framework (beans, endpoints,
+    propiedades). Sin el segundo, VS Code no te resalta ni autocompleta
+    nada de Spring.
+
 ### Un navegador moderno
 
 Cualquiera sirve. Vaadin no requiere ninguna extensión ni configuración
@@ -166,11 +183,11 @@ especial del lado del cliente.
 
 ---
 
-## Parte 5  -  La carpeta del repo
+## Parte 5 - La carpeta del repo
 
 ```bash
-mkdir stockpilot-vaadin-baqjug
-cd stockpilot-vaadin-baqjug
+mkdir stockpilot-vaadin
+cd stockpilot-vaadin
 git init
 ```
 
