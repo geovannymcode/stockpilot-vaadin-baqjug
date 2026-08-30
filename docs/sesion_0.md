@@ -194,15 +194,7 @@ git init
 Al final de esta guía vas a tener un único proyecto Maven, generado en la
 Sesión 1, con esta forma:
 
-```
-stockpilot-vaadin-baqjug/
-  pom.xml
-  src/main/java/com/baqjug/stockpilot/
-    product/       ← Sesiones 1 a 6: la funcionalidad de inventario
-    dashboard/      ← Sesión 7: la segunda feature
-    shell/          ← Sesión 7: navegación (lo único transversal)
-  frontend/themes/  ← Sesión 8: tu tema propio
-```
+![Estructura del Proyecto](images/Img02.png)
 
 !!! tip "Dónde van tus capturas"
     Si vas a documentar tu propio avance con imágenes, te sugiero una
