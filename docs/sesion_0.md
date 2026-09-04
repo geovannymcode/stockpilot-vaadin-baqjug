@@ -1,4 +1,4 @@
-# Sesión 0  -  El problema, por qué Vaadin y el setup
+# Sesión 0: El problema, por qué Vaadin y el setup
 
 **Lo que vas a lograr**: entender a fondo el problema que resuelve Vaadin,
 por qué lo elegimos en vez de separar frontend y backend, y dejar tu
@@ -6,7 +6,7 @@ entorno listo para la Sesión 1.
 
 ---
 
-## Parte 1 - El problema, en una historia
+## Parte 1: El problema, en una historia
 Un equipo de backend necesita un panel interno de inventario. Nada
 glamoroso: una tabla de productos, un formulario para editarlos, un botón
 para eliminar. Como todo el mundo hoy separa frontend de backend, arrancan
@@ -27,7 +27,7 @@ Tres semanas después, el inventario "simple" tiene:
    un token que viajar entre dos servicios, y una API pública (aunque sea
    "interna") que alguien tiene que versionar y documentar.
 4. **Un segundo pipeline de build**, con su `node_modules`, su bundler, sus
-   actualizaciones de dependencias  -  para una pantalla que en el fondo es
+   actualizaciones de dependencias, para una pantalla que en el fondo es
    una tabla y un formulario.
 
 Nada de esto es difícil por separado. El problema es que **se paga todo
@@ -38,7 +38,7 @@ negocio.
 
 ---
 
-## Parte 2 - Por qué Vaadin y no otra opción
+## Parte 2: Por qué Vaadin y no otra opción
 Antes de elegir, miremos las alternativas reales para este problema:
 
 - **Frontend separado (React/Angular/Vue) + API REST**: la opción por
@@ -55,7 +55,7 @@ Antes de elegir, miremos las alternativas reales para este problema:
 - **Vaadin Flow**: los componentes de UI son objetos Java. Vaadin mantiene
   una conexión persistente con el navegador y traduce cada cambio de
   estado del servidor en actualizaciones del DOM. Nunca escribes HTML, CSS
-  obligatorio, ni JavaScript  -  y sin embargo tienes interacciones ricas
+  obligatorio, ni JavaScript, y sin embargo tienes interacciones ricas
   (Grid ordenable, formularios reactivos) de fábrica.
 
 Elegimos Vaadin por tres razones concretas:
@@ -67,7 +67,7 @@ Elegimos Vaadin por tres razones concretas:
    generador de clientes: la vista y el servicio comparten literalmente las
    mismas clases de dominio.
 3. **La validación se escribe una sola vez**, del lado del servidor, con
-   Binder  -  y aun así se siente instantánea para el usuario, porque el
+   Binder, y aun así se siente instantánea para el usuario, porque el
    servidor está a milisegundos, no a un despliegue de distancia.
 
 |  | Frontend separado + REST | Vaadin Flow |
@@ -85,36 +85,36 @@ Elegimos Vaadin por tres razones concretas:
     sirviendo varios clientes (web, iOS, Android) contra la misma API, la
     separación frontend/backend sigue siendo la decisión correcta. Vaadin
     brilla en el otro extremo: herramientas internas, backoffices,
-    dashboards  -  el tipo de software que un equipo de backend construye
+    dashboards: el tipo de software que un equipo de backend construye
     todo el tiempo, y donde separar en dos repos es pagar una complejidad
     que nadie afuera de la empresa va a agradecer. StockPilot, lo que vamos
     a construir, es exactamente ese caso.
 
 ---
 
-## Parte 3 - Los conceptos en dos minutos
+## Parte 3: Los conceptos en dos minutos
 
 Dos ideas van a aparecer una y otra vez en esta guía:
 
 - **Signals**: el sistema de estado reactivo de Vaadin. En vez de escuchar
   eventos y actualizar la UI a mano, declaras la relación entre un dato y
   la UI una sola vez, y el framework mantiene todo sincronizado. Lo vas a
-  ver de cerca en la Sesión 2, y en su forma más potente  -  como KPIs de
-  negocio derivados  -  en la Sesión 3.
+  ver de cerca en la Sesión 2, y en su forma más potente (como KPIs de
+  negocio derivados) en la Sesión 3.
 - **Package-by-feature**: la forma en que vamos a organizar el código. En
   vez de separar por capa técnica (`backend`, `ui`), separamos por
   funcionalidad de negocio (`product`, `dashboard`). La Sesión 1 dedica su
   primera parte entera a explicar por qué.
 
 !!! abstract "Qué es Vaadin Flow, en una frase"
-    Un framework de Java (o Kotlin) donde cada componente de UI  - botón,
-    campo de texto, tabla -  es un objeto del lado del servidor, y el
+    Un framework de Java (o Kotlin) donde cada componente de UI (botón,
+    campo de texto, tabla) es un objeto del lado del servidor, y el
     framework se encarga de pintar y actualizar el navegador sin que
     escribas una línea de HTML o JavaScript.
 
 ---
 
-## Parte 4 - Lo que necesitas instalar
+## Parte 4: Lo que necesitas instalar
 ### Java 25
 
 ```bash
@@ -136,7 +136,7 @@ java -version
 !!! note "¿No tienes Java 25 todavía?"
     Vaadin 25 funciona con Java 21 en adelante. Si tu organización todavía
     no migró a 25, puedes seguir toda esta guía con Java 21 sin cambiar nada
-    del código  -  solo ajusta `java.version` en el `pom.xml` cuando lo
+    del código: solo ajusta `java.version` en el `pom.xml` cuando lo
     generemos en la Sesión 1.
 
 ### Maven
@@ -164,9 +164,9 @@ La Community Edition alcanza: [jetbrains.com/idea](https://www.jetbrains.com/ide
 Si tu equipo usa VS Code, instala estos dos packs de extensiones desde el
 Marketplace antes de la Sesión 1:
 
-- **Extension Pack for Java** (Microsoft)  -  soporte del lenguaje, debugger
+- **Extension Pack for Java** (Microsoft): soporte del lenguaje, debugger
   y ejecución de proyectos Maven/Gradle.
-- **Spring Boot Extension Pack** (VMware)  -  autocompletado de
+- **Spring Boot Extension Pack** (VMware): autocompletado de
   `application.properties`, navegación de beans y ejecución de
   aplicaciones Spring Boot.
 
@@ -183,7 +183,7 @@ especial del lado del cliente.
 
 ---
 
-## Parte 5 - La carpeta del repo
+## Parte 5: La carpeta del repo
 
 ```bash
 mkdir stockpilot-vaadin
@@ -198,7 +198,7 @@ Sesión 1, con esta forma:
 
 !!! tip "Dónde van tus capturas"
     Si vas a documentar tu propio avance con imágenes, te sugiero una
-    carpeta `docs/images/` dentro del repo, con un nombre por sesión  - 
+    carpeta `docs/images/` dentro del repo, con un nombre por sesión:
     `sesion1-grid-vacio.png`, `sesion3-kpis-en-vivo.png`, y así. Esta guía
     deja el lugar marcado en cada sesión con `![...]" para que sepas
     exactamente dónde va cada una.

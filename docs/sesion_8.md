@@ -1,13 +1,13 @@
-# Sesión 8  -  Theming, CSS y marca propia
+# Sesión 8: Theming, CSS y marca propia
 
 **Rama**: `sesion-8` (= `main`)
 **Lo que vas a lograr**: que StockPilot se vea como un producto, no como
-una demo  -  variantes de tema listas para usar, CSS propio para lo que las
+una demo: variantes de tema listas para usar, CSS propio para lo que las
 variantes no cubren, y (opcional) tu propia paleta de marca.
 
 ---
 
-## Parte 1 - Variantes de tema: estilo sin escribir CSS
+## Parte 1: Variantes de tema: estilo sin escribir CSS
 Lo más rápido para darle personalidad a la UI son las **variantes de
 tema**: estilos predefinidos que ya vienen con cada componente.
 
@@ -31,7 +31,7 @@ dialog.setConfirmButtonTheme("error primary");
     botón con el color principal del tema; `LUMO_ERROR` lo pinta de rojo;
     `LUMO_TERTIARY` le saca el borde. Puedes combinar varias a la vez, como
     en el botón Eliminar. Antes de escribir CSS a mano para algo, revisa si
-    ya existe una variante  -  la documentación de cada componente en
+    ya existe una variante: la documentación de cada componente en
     vaadin.com/docs las lista todas.
 
 Corre la app: Guardar debería verse en azul sólido, Eliminar en rojo.
@@ -40,9 +40,9 @@ Corre la app: Guardar debería verse en azul sólido, Eliminar en rojo.
 
 ---
 
-## Parte 2 - CSS propio, para lo que las variantes no cubren
-Para el resto  -  las tarjetas de KPI de las Sesiones 3 y 7, y el color de
-las filas de stock bajo que marcamos en la Sesión 3  -  escribimos CSS de
+## Parte 2: CSS propio, para lo que las variantes no cubren
+Para el resto (las tarjetas de KPI de las Sesiones 3 y 7, y el color de
+las filas de stock bajo que marcamos en la Sesión 3) escribimos CSS de
 verdad.
 
 Primero, le decimos a Vaadin que cargue un tema propio. Crea
@@ -137,12 +137,12 @@ detailForm.getStyle().set("padding-top", "30px");
 
 ---
 
-## Parte 3 - Tu propia paleta de marca (opcional)
+## Parte 3: Tu propia paleta de marca (opcional)
 
 Vaadin tiene un generador de temas donde puedes armar visualmente tu propia
 paleta y exportar el CSS resultante. Elige una paleta, exporta el CSS, y
 pégalo debajo del bloque de estilos propios en `styles.css`. No hace falta
-tocar ni una línea de Java para esto  -  es la ventaja de que el theming esté
+tocar ni una línea de Java para esto: es la ventaja de que el theming esté
 completamente separado de la lógica.
 
 ![Tu paleta de marca aplicada a StockPilot](images/sesion8-marca-propia.png)
@@ -153,7 +153,7 @@ completamente separado de la lógica.
 
 Con esto, StockPilot tiene Grid con búsqueda reactiva, KPIs computados,
 formulario validado, alta y baja, base de datos real, navegación entre dos
-funcionalidades, y un tema propio  -  todo en Java, todo organizado por
+funcionalidades, y un tema propio, todo en Java, todo organizado por
 funcionalidad de negocio.
 
 ```bash

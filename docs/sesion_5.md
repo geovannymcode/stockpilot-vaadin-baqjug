@@ -1,4 +1,4 @@
-# Sesión 5  -  Guardar, descartar, alta y baja
+# Sesión 5: Guardar, descartar, alta y baja
 
 **Rama**: `sesion-5`
 **Lo que vas a lograr**: guardar y descartar cambios de forma explícita,
@@ -7,13 +7,13 @@ un diálogo de confirmación.
 
 ---
 
-## Parte 1 - Modo buffered: guardar y descartar
+## Parte 1: Modo buffered: guardar y descartar
 Ahora mismo, como usamos `binder.readBean(...)` (no `binder.setBean(...)`),
 ya estamos en lo que Vaadin llama modo **"buffered"**: los cambios que el
 usuario hace en los campos no se escriben en el bean hasta que alguien lo
 pida explícitamente. Si en cambio hubiéramos usado `setBean`, estaríamos en
 modo **"write-through"**: cada tecla se escribiría de inmediato en el
-objeto  -  lo cual casi nunca es lo que quieres en un formulario real, porque
+objeto, lo cual casi nunca es lo que quieres en un formulario real, porque
 significa que una edición a medio hacer ya está "guardada" en memoria antes
 de que el usuario decida algo.
 
@@ -36,18 +36,18 @@ discardButton.addClickListener(event -> binder.readBean(selectedProduct.peek()))
 ```
 
 !!! danger "`peek()`, no `get()`, dentro de un click listener"
-    `get()` registra una dependencia reactiva  -  úsalo dentro de un
+    `get()` registra una dependencia reactiva: úsalo dentro de un
     `Signal.effect` o un `Signal.computed`, donde quieres que el bloque se
     vuelva a ejecutar si el signal cambia. `peek()` lee el valor actual
     **sin** registrar esa dependencia. Dentro de un click listener no
     quieres que este código se dispare de nuevo cada vez que cambie
-    `selectedProduct`  -  solo quieres su valor en el instante del clic. Por
+    `selectedProduct`: solo quieres su valor en el instante del clic. Por
     eso todo el código dentro de listeners de botón en esta guía usa
     `peek()`.
 
 **Guardar** llama a `binder.writeBean(...)`, que intenta escribir todos los
 campos al bean. Si algo no pasa validación, lanza una excepción y no
-escribe nada  -  el propio formulario ya está mostrando los errores, así que
+escribe nada: el propio formulario ya está mostrando los errores, así que
 el `catch` puede quedar vacío.
 
 ```java
@@ -77,7 +77,7 @@ actualiza. Edita otro y dale Descartar: debería revertir sin guardar nada.
 
 ---
 
-## Parte 2 - Alta de productos
+## Parte 2: Alta de productos
 Primero, una barra de herramientas de verdad: título, buscador, y un botón
 de agregar, todos en una fila.
 
@@ -186,7 +186,7 @@ debería decir "Crear" mientras el producto es nuevo.
 
 ---
 
-## Parte 3 - Baja con diálogo de confirmación
+## Parte 3: Baja con diálogo de confirmación
 Para borrar, lo último que queremos es que un clic accidental elimine algo
 sin preguntar. Vaadin trae un componente hecho exactamente para esto:
 `ConfirmDialog`.
@@ -233,7 +233,7 @@ deleteButton.addClickListener(event -> confirmDelete());
     un botón de cancelar además del de confirmar; `setConfirmText(...)`
     cambia la etiqueta del botón de confirmación; `setConfirmButtonTheme`
     le aplica variantes de tema (lo vas a ver de nuevo en la Sesión 8).
-    `addConfirmListener` corre solo si el usuario efectivamente confirma  - 
+    `addConfirmListener` corre solo si el usuario efectivamente confirma:
     cancelar simplemente cierra el diálogo sin ejecutar nada.
 
 Por último, no tiene sentido mostrar el botón Eliminar mientras estás

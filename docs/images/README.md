@@ -1,6 +1,6 @@
 # Capturas de pantalla
 
-Esta carpeta está vacía a propósito  -  cada sesión de la guía deja marcado
+Esta carpeta está vacía a propósito: cada sesión de la guía deja marcado
 con `![...](images/...)` dónde va cada captura, para que las agregues tú
 mismo a medida que avanzas.
 

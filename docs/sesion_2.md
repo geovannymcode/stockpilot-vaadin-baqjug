@@ -1,13 +1,13 @@
-# Sesión 2  -  Grid y búsqueda reactiva con Signals
+# Sesión 2: Grid y búsqueda reactiva con Signals
 
 **Rama**: `sesion-2`
 **Lo que vas a lograr**: una tabla real con datos de prueba, ordenable, con
-un campo de búsqueda que filtra en vivo usando Signals  -  el sistema de
+un campo de búsqueda que filtra en vivo usando Signals: el sistema de
 estado reactivo de Vaadin.
 
 ---
 
-## Parte 1 - De campos sueltos a un Grid de verdad
+## Parte 1: De campos sueltos a un Grid de verdad
 Los campos sueltos de la Sesión 1 ya cumplieron su propósito: mostrarte la
 mecánica básica de componentes y layouts. Ahora vamos a lo que de verdad va
 a ser el corazón de esta app: un `Grid`, la tabla avanzada de Vaadin.
@@ -77,7 +77,7 @@ public class ProductListView extends VerticalLayout {
 
 !!! abstract "Vaadin al paso: columnas manuales, no `Grid(Product.class)`"
     Si le pasas `Product.class` al constructor de `Grid`, genera columnas
-    automáticamente por cada propiedad de la clase  -  pero en la práctica
+    automáticamente por cada propiedad de la clase, pero en la práctica
     casi nunca es lo que quieres: te muestra el id, en el orden que Java
     decida, sin control del formato. Por eso las agregamos manualmente con
     `grid.addColumn(Product::getSku)`, una referencia al método getter. Cada
@@ -90,14 +90,14 @@ vista).
 
 ![Grid con los seis productos de muestra, ordenable por columna](images/sesion2-grid-datos-prueba.png)
 
-Los datos siguen siendo un método en memoria  -  eso lo resolvemos en la
-Sesión 6  -  pero ya podemos construir toda la experiencia de usuario sin
+Los datos siguen siendo un método en memoria (eso lo resolvemos en la
+Sesión 6), pero ya podemos construir toda la experiencia de usuario sin
 depender de una base de datos desde el día uno. Así trabaja el propio
 equipo de Vaadin en sus tutoriales, y así vamos a trabajar nosotros.
 
 ---
 
-## Parte 2 - Qué es un Signal, con el ejemplo más simple posible
+## Parte 2: Qué es un Signal, con el ejemplo más simple posible
 Antes de aplicar Signals a la búsqueda, veamos el problema que resuelven
 con el ejemplo más chico posible: un contador.
 
@@ -143,13 +143,13 @@ public class SignalCounter extends VerticalLayout {
 !!! abstract "Vaadin al paso: `ValueSignal`, `update`, `map` y `bindText`"
     - `ValueSignal<T>` es un contenedor de un solo valor que Vaadin observa.
       `new ValueSignal<>(0)` arranca en cero.
-    - `.update(c -> c + 1)` cambia el valor a partir del valor anterior  -  el
+    - `.update(c -> c + 1)` cambia el valor a partir del valor anterior: el
       equivalente reactivo de `count++`.
     - `.map(fn)` transforma el valor del signal en otra cosa (acá, un
       `Integer` en un `String`), sin modificar el signal original.
     - `button.bindText(...)` enlaza el texto del botón al resultado de esa
       transformación. Cada vez que `count` cambia, el texto se actualiza
-      solo  -  no escribiste ningún `button.setText(...)` manual.
+      solo: no escribiste ningún `button.setText(...)` manual.
 
 No escribimos ningún código que diga "cuando cambie el contador, actualiza
 el botón". Ese comportamiento surge solo, porque declaramos la relación
@@ -160,9 +160,9 @@ búsqueda del Grid.
 
 ---
 
-## Parte 3 - Búsqueda reactiva aplicada al Grid
+## Parte 3: Búsqueda reactiva aplicada al Grid
 Vamos a crear un `ValueSignal<String>` que represente lo que el usuario
-escribe en un campo de búsqueda, y enlazarlo directamente al campo  -  sin
+escribe en un campo de búsqueda, y enlazarlo directamente al campo, sin
 escuchar un evento de cambio de valor a mano.
 
 ```java

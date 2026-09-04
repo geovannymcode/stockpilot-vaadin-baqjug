@@ -1,14 +1,14 @@
-# Sesión 6  -  Backend real con Spring Data JPA
+# Sesión 6: Backend real con Spring Data JPA
 
 **Rama**: `sesion-6`
 **Lo que vas a lograr**: reemplazar la lista en memoria por una base H2
 real, con `ProductRepository` y `ProductService` viviendo junto a todo lo
-demás de la funcionalidad "producto"  -  la prueba concreta de por qué
+demás de la funcionalidad "producto": la prueba concreta de por qué
 package-by-feature importa.
 
 ---
 
-## Parte 1 - `Product` se convierte en una entidad JPA
+## Parte 1: `Product` se convierte en una entidad JPA
 Le agregamos anotaciones a `Product` **sin moverla de paquete**. Sigue
 viviendo en `product/`, junto al resto de las clases de esta funcionalidad.
 
@@ -55,7 +55,7 @@ public class Product {
       GenerationType.IDENTITY)` delega la generación del id a la base de
       datos (un autoincremental).
     - `@Column(nullable = false, unique = true)` describe restricciones de
-      la columna  -  acá, que el SKU no puede repetirse.
+      la columna: acá, que el SKU no puede repetirse.
     - `@Enumerated(EnumType.STRING)` guarda el enum como texto
       (`"ELECTRONICS"`) en vez de como un número de posición, que se
       rompería si algún día reordenás los valores del enum.
@@ -90,7 +90,7 @@ spring.jpa.hibernate.ddl-auto=create-drop
 
 ---
 
-## Parte 2 - Repositorio y servicio, en el mismo paquete
+## Parte 2: Repositorio y servicio, en el mismo paquete
 `product/ProductRepository.java`:
 
 ```java
@@ -150,7 +150,7 @@ public class ProductService {
 
 ---
 
-## Parte 3 - Sembrar datos sin `data.sql`
+## Parte 3: Sembrar datos sin `data.sql`
 Podríamos poblar la base con un `data.sql` de toda la vida, pero eso trae
 un riesgo concreto: si escribes los IDs a mano en el `INSERT`, pueden
 desincronizarse con el autoincremental de la base (`GenerationType.IDENTITY`),
@@ -213,8 +213,8 @@ public class ProductDataSeeder implements ApplicationRunner {
 
 ---
 
-## Parte 4 - Conectar la vista al servicio real
-Inyectamos `ProductService` en el constructor de la vista  -  inyección de
+## Parte 4: Conectar la vista al servicio real
+Inyectamos `ProductService` en el constructor de la vista: inyección de
 dependencias normal de Spring, sin anotaciones especiales, porque Vaadin ya
 registra las vistas como beans de Spring por nosotros.
 
@@ -249,11 +249,11 @@ productService.save(product);   // reemplaza el nextProductId++ / products.add(p
 productService.delete(product); // reemplaza products.remove(product)
 ```
 
-Puedes borrar el método `getSampleProducts()` y el campo `products`  -  ya no
+Puedes borrar el método `getSampleProducts()` y el campo `products`, ya no
 se usan.
 
 Reinicia el servidor por completo (esto sí necesita reinicio, no hot
-reload  -  cambiamos el datasource) y confirma que la tabla carga desde la
+reload, porque cambiamos el datasource) y confirma que la tabla carga desde la
 base real.
 
 ![La tabla cargando los mismos productos, ahora desde H2](images/sesion6-backend-real.png)

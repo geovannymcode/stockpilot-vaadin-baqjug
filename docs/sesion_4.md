@@ -1,4 +1,4 @@
-# Sesión 4  -  Formulario, Binder y validación
+# Sesión 4: Formulario, Binder y validación
 
 **Rama**: `sesion-4`
 **Lo que vas a lograr**: un formulario de detalle que aparece al
@@ -7,9 +7,9 @@ lo que el usuario escribe antes de aceptarlo.
 
 ---
 
-## Parte 1 - El formulario, enlazado a la selección
+## Parte 1: El formulario, enlazado a la selección
 Vamos a construir el formulario en dos pasos separados a propósito. Primero
-la estructura y la visibilidad  -  con Signals, igual que en las sesiones
+la estructura y la visibilidad, con Signals, igual que en las sesiones
 anteriores. Recién en la Parte 2 lo conectamos a los datos reales con
 Binder. Separar los dos pasos ayuda a ver con claridad qué resuelve cada
 herramienta.
@@ -17,7 +17,7 @@ herramienta.
 Vaadin tiene un `FormLayout`, pensado específicamente para formularios: da
 responsividad de fábrica y controla dónde va la etiqueta de cada campo.
 Vamos a declarar un campo por cada propiedad de `Product` como variable de
-instancia  -  los vamos a necesitar de nuevo en la Parte 2, cuando el Binder
+instancia: los vamos a necesitar de nuevo en la Parte 2, cuando el Binder
 tenga que referenciarlos.
 
 ```java
@@ -51,8 +51,8 @@ private FormLayout buildDetailForm() {
     incluida.
 
 Ahora, para saber qué producto está seleccionado, creamos otro
-`ValueSignal`, esta vez de tipo `Product`, que arranca en `null`  -  nadie
-seleccionado  -  y lo actualizamos cada vez que el usuario hace clic en una
+`ValueSignal`, esta vez de tipo `Product`, que arranca en `null` (nadie
+seleccionado) y lo actualizamos cada vez que el usuario hace clic en una
 fila:
 
 ```java
@@ -81,21 +81,21 @@ detailForm.bindVisible(selectedProduct.map(Objects::nonNull));
 ```
 
 Corre la app, haz clic en una fila y confirma que el formulario aparece
- - vacío todavía -  y que al deseleccionar (clic de nuevo en la misma fila)
+(vacío todavía) y que al deseleccionar (clic de nuevo en la misma fila)
 desaparece.
 
 ![El formulario apareciendo al seleccionar una fila, todavía vacío](images/sesion4-formulario-visibilidad.png)
 
 ---
 
-## Parte 2 - Binder: conectar el formulario a un `Product` real
+## Parte 2: Binder: conectar el formulario a un `Product` real
 El formulario aparece, pero está vacío. Para conectar sus campos a un
-objeto `Product`, usamos el `Binder`  -  la pieza de Vaadin dedicada a mapear
+objeto `Product`, usamos el `Binder`: la pieza de Vaadin dedicada a mapear
 propiedades de un bean a componentes de UI, con validación incluida.
 
 !!! danger "Signals y Binder no compiten, resuelven cosas distintas"
-    Signals maneja **qué se muestra y cuándo**  -  visibilidad, texto,
-    habilitado. Binder maneja **cómo se lee y escribe un formulario** contra
+    Signals maneja **qué se muestra y cuándo** (visibilidad, texto,
+    habilitado). Binder maneja **cómo se lee y escribe un formulario** contra
     un bean, con validación. Los vamos a usar juntos: un `Signal.effect`
     decide *cuándo* releer el formulario (cada vez que cambia la
     selección); el Binder hace la lectura y escritura en sí.
@@ -154,12 +154,12 @@ Llama a `configureBinder()` en el constructor, después de `configureGrid()`.
       muestra el mensaje y el valor no se escribe en el bean.
     - `.withConverter(...)` transforma el tipo del campo (acá, `String`) al
       tipo de la propiedad del bean (`BigDecimal`). Vaadin trae
-      conversores para los casos comunes  - `StringToIntegerConverter`,
-      `StringToDoubleConverter`, `StringToBigDecimalConverter` -  así no hay
+      conversores para los casos comunes (`StringToIntegerConverter`,
+      `StringToDoubleConverter`, `StringToBigDecimalConverter`), así no hay
       que escribirlos a mano.
     - `.withValidator(condición, mensaje)` agrega una regla propia. Se
       evalúa **después** del converter, así que opera sobre el tipo ya
-      convertido  -  por eso el validador del precio recibe un `BigDecimal`,
+      convertido: por eso el validador del precio recibe un `BigDecimal`,
       no un `String`.
     - `.bind(getter, setter)` conecta el campo, ya validado, a los métodos
       del bean. A partir de acá, el Binder sabe leer y escribir esa
@@ -176,7 +176,7 @@ Signal.effect(this, () -> binder.readBean(selectedProduct.get()));
 !!! tip "`readBean(null)` limpia el formulario"
     Si no hay ningún producto seleccionado, `selectedProduct.get()` es
     `null`, y `binder.readBean(null)` deja todos los campos vacíos. No hace
-    falta un `if` para ese caso  -  el propio Binder lo maneja.
+    falta un `if` para ese caso: el propio Binder lo maneja.
 
 Corre la app, haz clic en distintas filas y mira cómo el formulario se
 llena solo. Borra el nombre de un campo y mira el borde rojo de validación;

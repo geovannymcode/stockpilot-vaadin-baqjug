@@ -1,4 +1,4 @@
-# Sesión 1  -  El proyecto y package-by-feature
+# Sesión 1: El proyecto y package-by-feature
 
 **Rama**: `sesion-1`
 **Lo que vas a lograr**: el proyecto `stockpilot` generado y corriendo,
@@ -7,28 +7,29 @@ componentes de Vaadin en pantalla.
 
 ---
 
-## Parte 1 - Generar el proyecto con start.vaadin.com
+## Parte 1: Generar el proyecto con start.vaadin.com
+
 A diferencia de un proyecto Spring Boot cualquiera, para Vaadin conviene
 arrancar desde el asistente propio del framework:
 [https://start.vaadin.com](https://start.vaadin.com). Ya viene con el BOM
-de Vaadin, el plugin de Maven y una vista de ejemplo configurados  -  te
+de Vaadin, el plugin de Maven y una vista de ejemplo configurados: te
 ahorra la parte más propensa a errores de versión.
 
 Completa:
 
 | Campo | Valor |
 |-------|-------|
-| Framework | **Flow** (no Hilla  -  Hilla es para UIs en React con endpoints TypeScript; nosotros queremos Java puro de punta a punta) |
+| Framework | **Flow** (no Hilla, que es para UIs en React con endpoints TypeScript; nosotros queremos Java puro de punta a punta) |
 | Application name | `stockpilot` |
 | Technology stack | **Spring Boot** |
 | Language | **Java** |
 | Build tool | **Maven** |
-| Group ID | `com.baqjug` |
+| Group ID | `com.baqjug.stockpilot` |
 | Version de Vaadin | **25.2.6** (o la 25.x estable más reciente) |
 | Java version | **25** |
 
 Elige la plantilla **"Empty"** (o "Plain Java") en vez de alguna de las
-plantillas con ejemplos de negocio  -  vamos a construir todo nosotros, capa
+plantillas con ejemplos de negocio: vamos a construir todo nosotros, capa
 por capa, y no queremos código de muestra estorbando.
 
 Descarga el `.zip`, descomprímelo dentro de tu carpeta de repo, y ábrelo en
@@ -52,37 +53,42 @@ Espera a que termine antes de seguir.
 
 ---
 
-## Parte 2 - Por qué package-by-feature
+## Parte 2: Por qué package-by-feature
 Antes de escribir la primera vista, tomemos una decisión de arquitectura
 que va a acompañar todo el proyecto: cómo organizamos los paquetes.
 
-La plantilla que acabas de generar separa el proyecto en dos paquetes
-grandes: uno para toda la lógica de negocio  - entidades, servicios,
-repositorios -  y otro para todas las vistas. Es una separación **por capa
-técnica**, la misma que vas a encontrar en la gran mayoría de proyectos
-Spring Boot del mundo real. Funciona perfecto mientras el proyecto tiene
+Si abres el proyecto que acabas de generar, vas a ver que viene casi
+vacío: un único paquete `com.baqjug.stockpilot`, con la clase
+`Application.java` adentro y nada más. La plantilla no te impone ninguna
+arquitectura interna: esa decisión queda en tus manos, y la vamos a tomar
+ahora, antes de escribir la primera línea de código de negocio.
+
+La opción más común en un proyecto Spring Boot es separar **por capa
+técnica**: un paquete para toda la lógica de negocio (entidades,
+servicios, repositorios) y otro para las vistas o controladores. Para
+StockPilot, con un único dominio ("producto"), se vería así:
+
+![Estructura Normal](images/Img03.png)
+
+Es la estructura que vas a encontrar en la gran mayoría de proyectos
+Spring Boot del mundo real, y funciona perfecto mientras el proyecto tiene
 una sola funcionalidad de negocio.
 
 El problema aparece cuando el proyecto crece. El día que StockPilot necesite
-una segunda funcionalidad real  -  pedidos, proveedores, reportes  -  cada
+una segunda funcionalidad real (pedidos, proveedores, reportes), cada
 paquete técnico se va a llenar de clases de dominios distintos mezcladas
-entre sí. Para tocar "todo lo de producto" vas a tener que saltar entre dos
-paquetes lejanos, y el compilador no te va a avisar si una vista de
-"pedidos" termina usando por accidente una entidad de "producto" que no
-debería tocar.
+entre sí. Para tocar "todo lo de producto" vas a tener que saltar entre
+cuatro paquetes lejanos (`entity`, `repository`, `service`, `view`), y el
+compilador no te va a avisar si una vista de "pedidos" termina usando por
+accidente una entidad de "producto" que no debería tocar.
 
 Vamos a organizar distinto: **package-by-feature**. Todo lo que tiene que
-ver con la funcionalidad "producto"  -  la entidad, el repositorio, el
-servicio, la vista  -  vive en un solo paquete, `product`. El día de mañana,
-"pedidos" sería una carpeta nueva, `order`, sin tocar una sola línea de
-`product`.
+ver con la funcionalidad "producto" (la entidad, el repositorio, el
+servicio, la vista) vive en un solo paquete, `product`, dentro de tu
+proyecto real. El día de mañana, "pedidos" sería una carpeta nueva,
+`order`, sin tocar una sola línea de `product`.
 
-```
-com.baqjug.stockpilot
-├── product/     ← TODO lo de "producto": entidad, repo, servicio, vista
-├── dashboard/   ← (Sesión 7) la segunda feature
-└── shell/       ← (Sesión 7) lo único transversal: navegación
-```
+![Estructura Normal](images/Img04.png)
 
 Elegimos package-by-feature por tres razones:
 
@@ -91,7 +97,7 @@ Elegimos package-by-feature por tres razones:
    más seguido de lo que cambia junto con un `OrderService` que no tiene
    nada que ver. El paquete debería reflejar eso.
 2. **Agregar una funcionalidad no toca las que ya existen.** Una carpeta
-   nueva, sin tocar nada de las demás  -  lo vas a comprobar con tus propias
+   nueva, sin tocar nada de las demás: lo vas a comprobar con tus propias
    manos en la Sesión 7, cuando agreguemos `dashboard/` sin modificar ni
    una línea de `product/`.
 3. **El límite entre funcionalidades queda explícito.** Package-by-layer no
@@ -103,14 +109,14 @@ Elegimos package-by-feature por tres razones:
 
 !!! danger "La única excepción: lo transversal"
     No todo es una feature de negocio. La navegación general de la app, por
-    ejemplo, no es "de producto" ni "de pedidos"  -  es de toda la
+    ejemplo, no es "de producto" ni "de pedidos": es de toda la
     aplicación. Para eso reservamos un paquete técnico explícito, `shell/`
     (lo vas a crear en la Sesión 7). La regla no es "cero paquetes
     técnicos": es "el dominio manda, lo técnico es la excepción declarada".
 
 ---
 
-## Parte 3 - Creando la estructura de paquetes
+## Parte 3: Creando la estructura de paquetes
 Dentro de `src/main/java/com/baqjug/stockpilot`, crea el paquete `product`
 (clic derecho → **New → Package** en IntelliJ, o `mkdir -p` desde la
 terminal):
@@ -119,25 +125,16 @@ terminal):
 mkdir -p src/main/java/com/baqjug/stockpilot/product
 ```
 
-La plantilla de Vaadin generó una vista de ejemplo en la raíz del paquete
-principal (algo como `MainView.java`, con un `TextField` y un `Button` de
-saludo). Bórrala  -  la vamos a reconstruir nosotros, dentro de `product`,
-desde cero.
-
-```bash
-rm src/main/java/com/baqjug/stockpilot/MainView.java
-```
-
 ---
 
-## Parte 4 - Tus primeros componentes
+## Parte 4: Tus primeros componentes
 En Vaadin, cada componente de UI es una clase de Java: si necesitas un
 botón, instancias un botón; si necesitas un campo de texto, instancias un
-campo de texto. No hay una plantilla HTML detrás  -  el árbol de componentes
+campo de texto. No hay una plantilla HTML detrás: el árbol de componentes
 del lado del servidor **es** la interfaz.
 
-Primero, el modelo. Todavía sin ninguna anotación de persistencia  -  eso
-llega en la Sesión 6  -  porque queremos construir toda la experiencia de
+Primero, el modelo. Todavía sin ninguna anotación de persistencia (eso
+llega en la Sesión 6), porque queremos construir toda la experiencia de
 usuario con datos de prueba antes de depender de una base de datos.
 
 `product/ProductCategory.java`:
@@ -155,7 +152,7 @@ public enum ProductCategory {
 }
 ```
 
-`product/Product.java`  -  un bean simple, con getters y setters, y un id
+`product/Product.java`: un bean simple, con getters y setters, y un id
 `Long` que por ahora vamos a dejar en `null` para los productos que todavía
 no existen en ninguna base (esa idea de "id nulo = producto nuevo" la vamos
 a usar bastante a partir de la Sesión 5):
@@ -242,7 +239,7 @@ public class ProductListView extends VerticalLayout {
       (`localhost:8080/`).
     - `VerticalLayout` es un contenedor que apila sus componentes uno
       debajo del otro. `HorizontalLayout` hace lo mismo pero lado a lado.
-      Los layouts se anidan entre sí  -  así se construyen interfaces
+      Los layouts se anidan entre sí, y así se construyen interfaces
       complejas: layouts dentro de layouts.
     - `add(...)` agrega un componente al layout. Puedes pasarle uno o
       varios de una vez, como en `new HorizontalLayout(saveButton,
@@ -260,7 +257,7 @@ Corre la aplicación:
 mvn spring-boot:run
 ```
 
-Abre `http://localhost:8080` y prueba los dos botones  -  deberías ver la
+Abre `http://localhost:8080` y prueba los dos botones: deberías ver la
 notificación de cada uno.
 
 ![Primeros componentes: campo de nombre, precio y los botones Guardar/Descartar](images/sesion1-primeros-componentes.png)

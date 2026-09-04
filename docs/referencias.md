@@ -3,7 +3,7 @@
 ## Vaadin Flow
 
 - **Documentación general**: <https://vaadin.com/docs>
-- **Signals (estado reactivo)**: <https://vaadin.com/docs/latest/flow/ui-state>  -  la guía oficial de cómo manejar estado de UI con Signals.
+- **Signals (estado reactivo)**: <https://vaadin.com/docs/latest/flow/ui-state>, la guía oficial de cómo manejar estado de UI con Signals.
 - **Effects y Signals computados**: <https://vaadin.com/docs/latest/flow/ui-state/effects-computed>
 - **Component Bindings con Signals** (`bindValue`, `bindText`, `bindVisible`, `bindEnabled`): <https://vaadin.com/docs/latest/flow/ui-state/building-ui>
 - **Binder** (validación y binding de formularios): <https://vaadin.com/docs/latest/flow/binding-data/binder>
@@ -17,7 +17,7 @@
     `Signal.effect`, `bindValue`/`bindText`/`bindVisible`/`bindEnabled`)
     están confirmados contra la documentación oficial al momento de
     escribir esto. Si algo no compila tal cual en tu versión de Vaadin,
-    revisa el changelog de Signals en la documentación  -  lo más probable es
+    revisa el changelog de Signals en la documentación: lo más probable es
     un cambio menor de nombre de método, no un cambio de concepto.
 
 ## Spring
@@ -39,7 +39,7 @@ comparan ambos enfoques con más profundidad de la que cubre esta guía.
 !!! note "Sobre cuándo usarla"
     Package-by-feature suma cuanto más funcionalidades de negocio
     independientes tenga el proyecto. Para un proyecto de una sola
-    funcionalidad, la diferencia con package-by-layer es casi cosmética  - 
+    funcionalidad, la diferencia con package-by-layer es casi cosmética:
     el beneficio aparece cuando la segunda, tercera y cuarta funcionalidad
     entran en escena, como viste en la Sesión 7.
 

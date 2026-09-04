@@ -1,4 +1,4 @@
-# Sesión 7  -  Navegación y una segunda feature
+# Sesión 7: Navegación y una segunda feature
 
 **Rama**: `sesion-7`
 **Lo que vas a lograr**: un menú de navegación entre dos pantallas, y la
@@ -7,13 +7,13 @@ funcionalidad nueva sin tocar la que ya existe.
 
 ---
 
-## Parte 1 - El App Shell
+## Parte 1: El App Shell
 Hasta ahora solo tenemos una vista, así que no hace falta navegación. Antes
 de agregar la segunda, armamos la cáscara de la aplicación: un layout
 compartido con un menú lateral.
 
-Esto **sí** es transversal a toda la app  -  no es "de producto" ni de
-ninguna otra funcionalidad de negocio  -  así que va en el paquete técnico
+Esto **sí** es transversal a toda la app: no es "de producto" ni de
+ninguna otra funcionalidad de negocio, así que va en el paquete técnico
 que reservamos desde la Sesión 1: `shell/`.
 
 `shell/MainLayout.java`:
@@ -63,16 +63,16 @@ public class MainLayout extends AppLayout {
       menú que navega a la vista indicada por su clase, sin que tengas que
       escribir la URL a mano.
 
-Este archivo va a fallar en compilar hasta que exista `DashboardView`  - 
+Este archivo va a fallar en compilar hasta que exista `DashboardView`,
 que es justo lo que armamos ahora.
 
 ---
 
-## Parte 2 - La segunda feature: `dashboard/`
+## Parte 2: La segunda feature: `dashboard/`
 Vamos a crear un paquete completamente nuevo, `dashboard/`, con una vista
 de inicio que resume el estado del inventario. Presta atención a esta
 regla mientras la escribes: **esta vista SÍ puede depender de
-`ProductService`**  - la API pública de la feature de producto -  **pero
+`ProductService`** (la API pública de la feature de producto) **pero
 jamás de `ProductRepository`**. Una feature puede consumir la API pública
 de otra; nunca meterse en sus entrañas.
 
@@ -136,7 +136,7 @@ public class DashboardView extends VerticalLayout {
 ```
 
 Nota que esta vista calcula sus KPIs con un cálculo directo, no con
-Signals  -  es una pantalla de "una sola lectura al entrar", sin
+Signals: es una pantalla de "una sola lectura al entrar", sin
 interacción en vivo, así que no necesita reactividad. Signals se justifica
 cuando el dato cambia mientras el usuario mira la pantalla (como en la
 Sesión 3); acá no es el caso.
@@ -151,15 +151,15 @@ public class ProductListView extends VerticalLayout {
 
 ---
 
-## Parte 3 - Comprobar que package-by-feature cumplió su promesa
+## Parte 3: Comprobar que package-by-feature cumplió su promesa
 Corre la aplicación y navega entre "Inicio" y "Productos" con el menú
 lateral.
 
 ![Navegación entre Inicio y Productos con el menú lateral](images/sesion7-navegacion.png)
 
 !!! success "Lo que acabas de comprobar"
-    Agregaste una funcionalidad completa  - una vista nueva, cálculos
-    propios, una entrada de menú -  sin modificar ni una sola línea dentro
+    Agregaste una funcionalidad completa (una vista nueva, cálculos
+    propios, una entrada de menú) sin modificar ni una sola línea dentro
     de `product/`. Todo lo nuevo vive en `dashboard/`. Esa es exactamente
     la promesa que hicimos en la Sesión 1: package-by-feature no es una
     preferencia estética, es la razón por la que esto fue una carpeta

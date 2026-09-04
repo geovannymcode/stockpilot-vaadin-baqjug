@@ -2,7 +2,7 @@
 
 Esta guía se puede seguir sola, de principio a fin. Construimos desde cero
 **StockPilot**, un catálogo de inventario con Grid, búsqueda reactiva, KPIs
-en vivo, formularios validados, base de datos real y navegación  -  todo en
+en vivo, formularios validados, base de datos real y navegación, todo en
 Java, sin escribir HTML, sin un build de JavaScript, y sin separar el
 proyecto en un backend y un frontend.
 
@@ -16,8 +16,8 @@ proyecto en un backend y un frontend.
 
 ## El problema que motiva todo esto
 
-La última herramienta interna que tu equipo construyó  -  un panel de
-inventario, un backoffice de pedidos  -  probablemente terminó siendo dos
+La última herramienta interna que tu equipo construyó (un panel de
+inventario, un backoffice de pedidos) probablemente terminó siendo dos
 repos: un backend en Spring Boot con una API REST, y un frontend en React o
 Angular consumiéndola. Dos lenguajes, un contrato que mantener sincronizado
 a mano, validación duplicada en los dos lados, y un pipeline de build de
@@ -30,7 +30,7 @@ con calma y explica por qué Vaadin es la respuesta.
 **StockPilot**, un catálogo de productos e inventario:
 
 - Un Grid con búsqueda reactiva sobre SKU, nombre, categoría y proveedor.
-- KPIs en vivo  -  valor total del inventario, productos con stock bajo  - 
+- KPIs en vivo (valor total del inventario, productos con stock bajo)
   que se recalculan solos usando **Signals**, el sistema de estado
   reactivo de Vaadin.
 - Un formulario de alta, edición y baja, con validación y modo buffered
@@ -41,8 +41,8 @@ con calma y explica por qué Vaadin es la respuesta.
 
 ![Arquitectura Vaadin Flow, Services, Repositorio y Database](images/Img01.png)
 
-Y organizado con **package-by-feature**: todo lo de "producto"  -  entidad,
-repositorio, servicio y vista  -  vive en un solo paquete, en vez de
+Y organizado con **package-by-feature**: todo lo de "producto" (entidad,
+repositorio, servicio y vista) vive en un solo paquete, en vez de
 repartido entre una capa `backend` y una capa `ui`. La Sesión 1 explica por
 qué esta decisión importa tanto como la elección de framework.
 
@@ -77,7 +77,7 @@ Java 25 · Spring Boot 4.1.0 · Vaadin Flow 25.2.6 · Maven · H2 (en memoria).
     [start.spring.io](https://start.spring.io) las versiones disponibles
     cambian con el tiempo. Si no ves exactamente estas versiones, elige la
     más reciente estable dentro de la misma serie (Vaadin 25.x, Spring Boot
-    4.1.x)  -  el asistente se encarga de que las dependencias sean
+    4.1.x): el asistente se encarga de que las dependencias sean
     compatibles entre sí.
 
 Cuando estés listo, arranca por la [Sesión 0](sesion_0.md).

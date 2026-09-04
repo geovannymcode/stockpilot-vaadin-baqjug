@@ -1,8 +1,8 @@
-# Sesión 3  -  KPIs con Signals computados
+# Sesión 3: KPIs con Signals computados
 
 **Rama**: `sesion-3`
-**Lo que vas a lograr**: dos números de negocio  -  el valor total del
-inventario y la cantidad de productos con stock bajo  -  que se recalculan
+**Lo que vas a lograr**: dos números de negocio (el valor total del
+inventario y la cantidad de productos con stock bajo) que se recalculan
 solos, en tiempo real, incluso cuando el usuario está filtrando. Sin un
 solo listener manual.
 
@@ -19,7 +19,7 @@ negocio a partir de otro.
 
 ---
 
-## Parte 1 - El objetivo, antes del código
+## Parte 1: El objetivo, antes del código
 Queremos que en cualquier momento se puedan leer dos cosas, sin escribir un
 solo listener manual:
 
@@ -28,13 +28,13 @@ solo listener manual:
 2. **Cuántos productos** están por debajo de su nivel de reorden.
 
 Y queremos que estos dos números se recalculen solos cuando cambian los
-datos  -  incluso cuando el usuario está escribiendo en el buscador de la
+datos, incluso cuando el usuario está escribiendo en el buscador de la
 Sesión 2. Si filtramos por "café", el valor total del inventario debería
 mostrar solo el valor del café, no de todo el catálogo.
 
 ---
 
-## Parte 2 - El paso clave: que los datos visibles SEAN un Signal
+## Parte 2: El paso clave: que los datos visibles SEAN un Signal
 Hasta ahora, `updateProductList` recibía el resultado del filtro y se lo
 pasaba directo al grid con `grid.setItems(filtered)`. Para poder derivar
 KPIs de esos datos, primero necesitamos que el resultado del filtro exista
@@ -78,16 +78,16 @@ Signal.effect(this, () -> grid.setItems(visibleProducts.get()));
     segundo refleja "datos visibles" en la UI (una decisión de
     presentación). Esta separación es la que nos permite, en la Parte 3,
     derivar los KPIs directamente de `visibleProducts` sin que le importe
-    de dónde salieron esos datos  -  de una búsqueda, de una alta, de una
+    de dónde salieron esos datos: de una búsqueda, de una alta, de una
     baja, de lo que sea.
 
 ---
 
-## Parte 3 - Signals computados: `Signal.computed`
+## Parte 3: Signals computados: `Signal.computed`
 Con `visibleProducts` como signal, ya podemos declarar valores derivados de
 él, sin tocarlo. A esto se le llama un **signal computado**: se define una
 sola vez con `Signal.computed(...)`, y Vaadin lo recalcula automáticamente
-cada vez que cambia cualquier signal leído dentro  -  en este caso,
+cada vez que cambia cualquier signal leído dentro, en este caso,
 `visibleProducts`.
 
 ```java
@@ -102,8 +102,8 @@ private final Signal<Long> lowStockCount = Signal.computed(() ->
 
 !!! abstract "Vaadin al paso: `Signal.computed` vs `Signal.effect`"
     Los dos reaccionan a cambios, pero para cosas distintas.
-    `Signal.effect` corre un efecto secundario  -  actualizar un componente,
-    imprimir un log  -  y no devuelve nada útil para leer después.
+    `Signal.effect` corre un efecto secundario (actualizar un componente,
+    imprimir un log) y no devuelve nada útil para leer después.
     `Signal.computed` **devuelve un nuevo signal de solo lectura**, cuyo
     valor es el resultado del cálculo. Usás `effect` cuando quieres *hacer*
     algo al cambiar un dato; usás `computed` cuando quieres *derivar* un
@@ -147,14 +147,14 @@ private String formatCurrency(BigDecimal amount) {
 
 Agrega `add(buildKpiBar());` en el constructor, justo antes de `add(grid)`.
 Las clases CSS (`kpi-bar`, `kpi-card`, `kpi-title`, `kpi-value`) todavía no
-tienen estilo  -  eso llega en la Sesión 8  -  así que por ahora se van a ver
+tienen estilo (eso llega en la Sesión 8), así que por ahora se van a ver
 como texto plano, sin tarjeta. Es un buen momento para recordar que en
 Vaadin la lógica y el estilo son pasos separados: primero el dato correcto
 en pantalla, después el CSS.
 
 ---
 
-## Parte 4 - El momento clave: probalo filtrando
+## Parte 4: El momento clave: probalo filtrando
 Corre la aplicación y escribe "café" en el buscador.
 
 ![El valor total del inventario cambiando solo al filtrar por "café"](images/sesion3-kpis-filtrando.png)
@@ -163,16 +163,16 @@ Corre la aplicación y escribe "café" en el buscador.
     No escribiste ningún código que diga "cuando busques, actualiza
     también el total". Ese comportamiento surgió solo, porque
     `totalInventoryValue` depende de `visibleProducts`, y `visibleProducts`
-    cambia con cada búsqueda. La cadena de dependencias  -  búsqueda →
-    datos visibles → KPI  -  la armaste una sola vez, y a partir de ahí se
+    cambia con cada búsqueda. La cadena de dependencias (búsqueda →
+    datos visibles → KPI) la armaste una sola vez, y a partir de ahí se
     mantiene sola. Este es el tipo de resultado que casi ningún tutorial
     introductorio de Signals muestra, porque casi ninguno encadena signals
-    más allá de dos pasos  -  y es justo lo que un caso de negocio real
+    más allá de dos pasos, y es justo lo que un caso de negocio real
     necesita.
 
 ---
 
-## Parte 5 - Marcar (sin todavía colorear) el stock bajo
+## Parte 5: Marcar (sin todavía colorear) el stock bajo
 Para cerrar, preparamos el terreno de la Sesión 8: le decimos al Grid qué
 filas son de stock bajo, aunque el color todavía no se vea.
 
@@ -186,7 +186,7 @@ Agrega esta línea dentro de `configureGrid()`.
     `setPartNameGenerator` le agrega una etiqueta CSS (`low-stock-row`) a
     las celdas de esas filas, pero sin una regla de CSS que le dé color a
     esa etiqueta, no cambia nada visualmente. Es un ejemplo real de separar
-    "marcar el dato" de "darle estilo"  -  dos responsabilidades, dos
+    "marcar el dato" de "darle estilo": dos responsabilidades, dos
     momentos. Vas a escribir esa regla de CSS en la Sesión 8.
 
 ---
