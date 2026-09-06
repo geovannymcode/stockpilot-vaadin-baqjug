@@ -58,6 +58,7 @@ private void save() {
     }
     try {
         binder.writeBean(product);
+        grid.getDataProvider().refreshItem(product);
         updateVisibleProducts(searchQuery.peek());
         Notification.show("Producto guardado");
     } catch (ValidationException e) {
@@ -69,6 +70,22 @@ private void save() {
 ```java
 saveButton.addClickListener(event -> save());
 ```
+
+!!! danger "`refreshItem`, no solo el signal: mutar un objeto no es lo mismo que cambiar la lista"
+    `binder.writeBean(product)` no crea un `Product` nuevo: escribe los
+    campos del formulario en el mismo objeto que ya estaba en `products` y
+    en `visibleProducts`. Y ahí está el problema: `updateVisibleProducts`
+    vuelve a filtrar y arma una lista nueva, sí, pero si la búsqueda no
+    cambió, esa lista nueva contiene exactamente los mismos objetos, en el
+    mismo orden, que la anterior, así que para el signal es "el mismo
+    valor" y no dispara de nuevo el efecto que pinta el grid. El grid nunca
+    se entera de que uno de sus objetos cambió por dentro. `refreshItem(product)`
+    resuelve esto sin pasar por el signal: le dice directamente al `Grid`
+    "esta fila específica cambió, volvé a pintarla", sin importar si la
+    lista completa se considera distinta o no. Agregar o eliminar productos
+    sí cambia el tamaño de la lista, así que ahí el signal funciona solo,
+    sin necesidad de `refreshItem`; editar un producto existente es
+    justamente el caso en el que no alcanza.
 
 Edita el nombre de un producto, dale Guardar, y confirma que el grid se
 actualiza. Edita otro y dale Descartar: debería revertir sin guardar nada.
@@ -164,6 +181,8 @@ private void save() {
         if (wasNew) {
             product.setId(nextProductId++);
             products.add(product);
+        } else {
+            grid.getDataProvider().refreshItem(product);
         }
         updateVisibleProducts(searchQuery.peek());
         Notification.show("Producto guardado");

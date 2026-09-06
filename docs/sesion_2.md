@@ -204,10 +204,15 @@ public class ProductListView extends VerticalLayout {
         Signal.effect(this, () -> updateProductList(searchQuery.get()));
     }
 
-    // configureGrid() queda igual que en la Parte 1
+    // configureGrid() queda igual que en la Parte 1, con un cambio: borra
+    // la línea `grid.setItems(getSampleProducts())`. Ya no hace falta: el
+    // efecto de abajo es ahora el único responsable de decirle al grid qué
+    // mostrar, y dejar esa llamada suelta puede pintar, por un instante, una
+    // lista de productos que no son los mismos objetos que `products` (un
+    // "fantasma" con el que después no vas a poder guardar cambios).
 
     private void updateProductList(String query) {
-        List<Product> filtered = products;
+        List<Product> filtered = new ArrayList<>(products);
         if (query != null && !query.isBlank()) {
             String lowerQuery = query.toLowerCase();
             filtered = products.stream()
@@ -223,6 +228,16 @@ public class ProductListView extends VerticalLayout {
     // getSampleProducts() queda igual que en la Parte 1
 }
 ```
+
+!!! note "Por qué `new ArrayList<>(products)` y no `filtered = products`"
+    Cuando la búsqueda está vacía, no hay nada que filtrar, así que es
+    tentador simplemente reusar `products` tal cual. El problema es que eso
+    deja `filtered` apuntando exactamente al mismo objeto `List` que
+    `products`: cualquier cambio posterior a uno le pasa al otro, sin que
+    nadie lo pida. Copiarlo siempre con `new ArrayList<>(products)` evita
+    ese acoplamiento accidental, incluso cuando hoy en la Sesión 2 todavía
+    no hay forma de agregar o eliminar productos. Vas a agradecer este
+    hábito en la Sesión 5.
 
 !!! abstract "Vaadin al paso: `bindValue` y `Signal.effect`"
     - `searchField.bindValue(searchQuery, searchQuery::set)` crea una

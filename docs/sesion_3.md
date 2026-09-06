@@ -49,7 +49,7 @@ directamente, actualice este nuevo signal:
 
 ```java
 private void updateVisibleProducts(String query) {
-    List<Product> filtered = products;
+    List<Product> filtered = new ArrayList<>(products);
     if (query != null && !query.isBlank()) {
         String lowerQuery = query.toLowerCase();
         filtered = products.stream()
@@ -70,6 +70,15 @@ reflejar `visibleProducts` en el grid:
 Signal.effect(this, () -> updateVisibleProducts(searchQuery.get()));
 Signal.effect(this, () -> grid.setItems(visibleProducts.get()));
 ```
+
+!!! danger "Borra el código viejo de la Sesión 2, no lo dejes al lado"
+    Estos dos efectos reemplazan, no complementan, a
+    `Signal.effect(this, () -> updateProductList(searchQuery.get()));` de la
+    Sesión 2: borra esa línea del constructor. Borra también el método
+    `updateProductList` completo, ya que nadie lo llama más. Si lo dejás
+    ahí "por si acaso", vas a terminar con dos caminos distintos escribiendo
+    al mismo grid, y ese es justo el tipo de bug que se manifiesta a veces
+    sí y a veces no, según cuál de los dos efectos corra último.
 
 !!! danger "Por qué separar en dos efectos"
     Podríamos haber dejado todo en un solo efecto que filtra y llama a
