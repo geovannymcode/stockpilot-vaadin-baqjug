@@ -680,10 +680,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#parte-4-conectar-la-vista-al-servicio-real" class="md-nav__link">
+  <a href="#parte-4-conectar-la-vista-y-el-bug-que-vas-a-ver-en-vivo" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Parte 4: Conectar la vista al servicio real
+        Parte 4: Conectar la vista, y el bug que vas a ver en vivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-5-por-que-pasa-identidad-de-jpa-contra-igualdad-de-valor-de-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte 5: Por qué pasa: identidad de JPA contra igualdad de valor de Signals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parte-6-la-solucion-un-record-como-proyeccion-de-vista" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte 6: La solución: un record como proyección de vista
       
     </span>
   </a>
@@ -823,9 +845,10 @@
 <h1 id="sesion-6-backend-real-con-spring-data-jpa">Sesión 6: Backend real con Spring Data JPA<a class="headerlink" href="#sesion-6-backend-real-con-spring-data-jpa" title="Permanent link">&para;</a></h1>
 <p><strong>Rama</strong>: <code>sesion-6</code>
 <strong>Lo que vas a lograr</strong>: reemplazar la lista en memoria por una base H2
-real, con <code>ProductRepository</code> y <code>ProductService</code> viviendo junto a todo lo
-demás de la funcionalidad "producto": la prueba concreta de por qué
-package-by-feature importa.</p>
+real con Spring Data JPA, tropezar con un bug real donde JPA y Signals no
+se llevan bien, entender por qué pasa, y resolverlo con un patrón que vas
+a repetir en proyectos reales: separar la entidad de persistencia de la
+proyección que muestra la UI.</p>
 <hr />
 <h2 id="parte-1-product-se-convierte-en-una-entidad-jpa">Parte 1: <code>Product</code> se convierte en una entidad JPA<a class="headerlink" href="#parte-1-product-se-convierte-en-una-entidad-jpa" title="Permanent link">&para;</a></h2>
 <p>Le agregamos anotaciones a <code>Product</code> <strong>sin moverla de paquete</strong>. Sigue
@@ -841,28 +864,46 @@ viviendo en <code>product/</code>, junto al resto de las clases de esta funciona
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.persistence.Id</span><span class="p">;</span>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jakarta.persistence.Table</span><span class="p">;</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nd">@Entity</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="nd">@Table</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"product"</span><span class="p">)</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Product</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="nd">@Id</span>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">    </span><span class="nd">@GeneratedValue</span><span class="p">(</span><span class="n">strategy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GenerationType</span><span class="p">.</span><span class="na">IDENTITY</span><span class="p">)</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">unique</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">sku</span><span class="p">;</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">    </span><span class="nd">@Enumerated</span><span class="p">(</span><span class="n">EnumType</span><span class="p">.</span><span class="na">STRING</span><span class="p">)</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">ProductCategory</span><span class="w"> </span><span class="n">category</span><span class="p">;</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">unitPrice</span><span class="p">;</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">    </span><span class="c1">// el resto de los campos, sin cambios</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="p">}</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.math.BigDecimal</span><span class="p">;</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="nd">@Entity</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="nd">@Table</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"product"</span><span class="p">)</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Product</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">    </span><span class="nd">@Id</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">    </span><span class="nd">@GeneratedValue</span><span class="p">(</span><span class="n">strategy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GenerationType</span><span class="p">.</span><span class="na">IDENTITY</span><span class="p">)</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="n">unique</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">sku</span><span class="p">;</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">    </span><span class="nd">@Enumerated</span><span class="p">(</span><span class="n">EnumType</span><span class="p">.</span><span class="na">STRING</span><span class="p">)</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">ProductCategory</span><span class="w"> </span><span class="n">category</span><span class="p">;</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="w">    </span><span class="nd">@Column</span><span class="p">(</span><span class="n">nullable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">unitPrice</span><span class="p">;</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="w">    </span><span class="c1">// el resto de los campos, sin cambios</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a><span class="w">    </span><span class="nd">@Override</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">o</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Product</span><span class="w"> </span><span class="n">other</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span>
+</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">id</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="na">id</span><span class="p">);</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a>
+</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a><span class="w">    </span><span class="nd">@Override</span>
+</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">hashCode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">getClass</span><span class="p">().</span><span class="na">hashCode</span><span class="p">();</span>
+</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a><span class="p">}</span>
 </span></code></pre></div>
 <div class="admonition abstract">
 <p class="admonition-title">Spring al paso: las anotaciones de persistencia</p>
@@ -878,6 +919,22 @@ viviendo en <code>product/</code>, junto al resto de las clases de esta funciona
   (<code>"ELECTRONICS"</code>) en vez de como un número de posición, que se
   rompería si algún día reordenás los valores del enum.</li>
 </ul>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Por qué <code>equals</code>/<code>hashCode</code> por id, y no los que ya tenías</p>
+<p>Hasta ahora <code>Product</code> no sobreescribía ni <code>equals</code> ni <code>hashCode</code>: usaba
+los de <code>Object</code>, que comparan por identidad de referencia. Para una
+entidad JPA, comparar solo por <code>id</code> es la práctica recomendada: dos
+objetos <code>Product</code> que representan la misma fila (mismo id) deben
+considerarse el mismo producto, aunque sean instancias Java distintas
+devueltas por dos consultas separadas, algo que pasa todo el tiempo con
+Hibernate. Sin esto, guardar un <code>Product</code> en un <code>Set</code>, o compararlo
+después de que Hibernate lo vuelva a cargar, da resultados
+inconsistentes. El <code>hashCode()</code> fijo por clase (no por id) es a
+propósito: el id de una entidad nueva es <code>null</code> hasta que se guarda, y
+el hash de un objeto no puede cambiar mientras vive dentro de una
+colección basada en hash. Guárdate esta decisión en la cabeza: en la
+Parte 4 va a chocar de frente con Signals.</p>
 </div>
 <div class="admonition danger">
 <p class="admonition-title">Lo importante: la clase no cambió de lugar</p>
@@ -901,7 +958,43 @@ proyecto sin ellas en la Sesión 1):</p>
 <p>Y en <code>application.properties</code>:</p>
 <div class="language-properties highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="na">spring.datasource.url</span><span class="o">=</span><span class="s">jdbc:h2:mem:stockpilot</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="na">spring.jpa.hibernate.ddl-auto</span><span class="o">=</span><span class="s">create-drop</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="na">spring.jpa.open-in-view</span><span class="o">=</span><span class="s">false</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="na">spring.h2.console.enabled</span><span class="o">=</span><span class="s">true</span>
 </span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title"><code>create-drop</code> + <code>mem:</code> significa que la base se recrea en cada reinicio</p>
+<p><code>mem:stockpilot</code> es una base en memoria: vive mientras el proceso de
+Spring Boot está corriendo, y desaparece apenas lo apagas.
+<code>create-drop</code> hace que Hibernate borre y vuelva a crear el esquema en
+cada arranque. La combinación es perfecta para desarrollo (siempre
+arrancas con datos limpios, sembrados por <code>ProductDataSeeder</code>), pero no
+es persistencia real: nada de lo que hagas en una sesión de prueba
+sobrevive un reinicio, y el seeder vuelve a correr desde cero cada vez.
+Sin esta aclaración, un cambio guardado que "desaparece" al reiniciar
+parece un bug. El día que necesites que los datos persistan, cambias a
+un archivo (<code>jdbc:h2:file:./data/stockpilot</code>) o a una base de verdad
+como Postgres.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Entrar a la consola de H2</p>
+<p>Con <code>spring.h2.console.enabled=true</code>, corre la app y abre
+<code>http://localhost:8080/h2-console</code> en el navegador. En <strong>JDBC URL</strong>
+pega exactamente <code>jdbc:h2:mem:stockpilot</code> (tiene que coincidir con el
+de <code>application.properties</code>), deja usuario y contraseña en blanco, y
+conéctate. Desde ahí puedes ver las tablas y correr SQL directo contra
+lo que sembró <code>ProductDataSeeder</code>.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Por qué apagamos <code>spring.jpa.open-in-view</code></p>
+<p>Spring Boot trae el patrón Open Session In View activado por defecto:
+mantiene la sesión de Hibernate abierta durante toda la petición,
+incluido el renderizado de la vista. Es cómodo, evita
+<code>LazyInitializationException</code> del lado de la UI, pero también esconde
+consultas N+1 y deja que la capa de persistencia se filtre hasta donde
+no debería. Con <code>open-in-view=false</code>, cualquier acceso a datos
+perezosos tiene que pasar explícitamente por <code>ProductService</code>, que es
+donde corresponde.</p>
+</div>
 <hr />
 <h2 id="parte-2-repositorio-y-servicio-en-el-mismo-paquete">Parte 2: Repositorio y servicio, en el mismo paquete<a class="headerlink" href="#parte-2-repositorio-y-servicio-en-el-mismo-paquete" title="Permanent link">&para;</a></h2>
 <p><code>product/ProductRepository.java</code>:</p>
@@ -990,25 +1083,45 @@ que usa el resto de la aplicación.</p>
 </span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">        </span><span class="p">}</span>
 </span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">        </span><span class="n">productService</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">sample</span><span class="p">(</span><span class="s">"ELE-1001"</span><span class="p">,</span><span class="w"> </span><span class="s">"Audífonos inalámbricos"</span><span class="p">,</span><span class="w"> </span><span class="n">ProductCategory</span><span class="p">.</span><span class="na">ELECTRONICS</span><span class="p">,</span>
 </span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w">                </span><span class="s">"149900"</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="s">"TecnoImport SAS"</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">));</span>
-</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">        </span><span class="c1">// ... el resto de los productos de muestra de la Sesión 2</span>
-</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a>
-</span><span id="__span-5-28"><a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Product</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">sku</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">ProductCategory</span><span class="w"> </span><span class="n">category</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">price</span><span class="p">,</span>
-</span><span id="__span-5-29"><a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a><span class="w">                            </span><span class="kt">int</span><span class="w"> </span><span class="n">stock</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">reorderLevel</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">supplier</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">restockedDaysAgo</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-5-30"><a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a><span class="w">        </span><span class="n">Product</span><span class="w"> </span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Product</span><span class="p">();</span>
-</span><span id="__span-5-31"><a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setSku</span><span class="p">(</span><span class="n">sku</span><span class="p">);</span>
-</span><span id="__span-5-32"><a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setName</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
-</span><span id="__span-5-33"><a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setCategory</span><span class="p">(</span><span class="n">category</span><span class="p">);</span>
-</span><span id="__span-5-34"><a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setUnitPrice</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">BigDecimal</span><span class="p">(</span><span class="n">price</span><span class="p">));</span>
-</span><span id="__span-5-35"><a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setStockQuantity</span><span class="p">(</span><span class="n">stock</span><span class="p">);</span>
-</span><span id="__span-5-36"><a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setReorderLevel</span><span class="p">(</span><span class="n">reorderLevel</span><span class="p">);</span>
-</span><span id="__span-5-37"><a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setSupplier</span><span class="p">(</span><span class="n">supplier</span><span class="p">);</span>
-</span><span id="__span-5-38"><a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setActive</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
-</span><span id="__span-5-39"><a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setLastRestockedDate</span><span class="p">(</span><span class="n">LocalDate</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">minusDays</span><span class="p">(</span><span class="n">restockedDaysAgo</span><span class="p">));</span>
-</span><span id="__span-5-40"><a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">product</span><span class="p">;</span>
-</span><span id="__span-5-41"><a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-5-42"><a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a><span class="p">}</span>
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">        </span><span class="n">productService</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">sample</span><span class="p">(</span><span class="s">"ELE-1002"</span><span class="p">,</span><span class="w"> </span><span class="s">"Cargador USB-C 65W"</span><span class="p">,</span><span class="w"> </span><span class="n">ProductCategory</span><span class="p">.</span><span class="na">ELECTRONICS</span><span class="p">,</span>
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="w">                </span><span class="s">"89900"</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">,</span><span class="w"> </span><span class="s">"TecnoImport SAS"</span><span class="p">,</span><span class="w"> </span><span class="mi">40</span><span class="p">));</span>
+</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="w">        </span><span class="n">productService</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">sample</span><span class="p">(</span><span class="s">"GRO-2001"</span><span class="p">,</span><span class="w"> </span><span class="s">"Café molido 500g"</span><span class="p">,</span><span class="w"> </span><span class="n">ProductCategory</span><span class="p">.</span><span class="na">GROCERY</span><span class="p">,</span>
+</span><span id="__span-5-28"><a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="w">                </span><span class="s">"22000"</span><span class="p">,</span><span class="w"> </span><span class="mi">120</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="s">"Café del Norte"</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">));</span>
+</span><span id="__span-5-29"><a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a><span class="w">        </span><span class="n">productService</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">sample</span><span class="p">(</span><span class="s">"APP-3001"</span><span class="p">,</span><span class="w"> </span><span class="s">"Camiseta BAQJUG edición 10 años"</span><span class="p">,</span><span class="w"> </span><span class="n">ProductCategory</span><span class="p">.</span><span class="na">APPAREL</span><span class="p">,</span>
+</span><span id="__span-5-30"><a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a><span class="w">                </span><span class="s">"59900"</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span><span class="w"> </span><span class="s">"Confecciones Caribe"</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="p">));</span>
+</span><span id="__span-5-31"><a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="w">        </span><span class="n">productService</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">sample</span><span class="p">(</span><span class="s">"HOM-4001"</span><span class="p">,</span><span class="w"> </span><span class="s">"Set de sábanas queen"</span><span class="p">,</span><span class="w"> </span><span class="n">ProductCategory</span><span class="p">.</span><span class="na">HOME_GOODS</span><span class="p">,</span>
+</span><span id="__span-5-32"><a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="w">                </span><span class="s">"134900"</span><span class="p">,</span><span class="w"> </span><span class="mi">25</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="s">"Textiles del Río"</span><span class="p">,</span><span class="w"> </span><span class="mi">60</span><span class="p">));</span>
+</span><span id="__span-5-33"><a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="w">        </span><span class="n">productService</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">sample</span><span class="p">(</span><span class="s">"TOY-5001"</span><span class="p">,</span><span class="w"> </span><span class="s">"Rompecabezas 1000 piezas"</span><span class="p">,</span><span class="w"> </span><span class="n">ProductCategory</span><span class="p">.</span><span class="na">TOYS</span><span class="p">,</span>
+</span><span id="__span-5-34"><a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="w">                </span><span class="s">"45000"</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="s">"Juguetería Alegre"</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">));</span>
+</span><span id="__span-5-35"><a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-5-36"><a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a>
+</span><span id="__span-5-37"><a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Product</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">sku</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">ProductCategory</span><span class="w"> </span><span class="n">category</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">price</span><span class="p">,</span>
+</span><span id="__span-5-38"><a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a><span class="w">                            </span><span class="kt">int</span><span class="w"> </span><span class="n">stock</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">reorderLevel</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">supplier</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">restockedDaysAgo</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-39"><a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a><span class="w">        </span><span class="n">Product</span><span class="w"> </span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Product</span><span class="p">();</span>
+</span><span id="__span-5-40"><a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setSku</span><span class="p">(</span><span class="n">sku</span><span class="p">);</span>
+</span><span id="__span-5-41"><a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setName</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+</span><span id="__span-5-42"><a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setCategory</span><span class="p">(</span><span class="n">category</span><span class="p">);</span>
+</span><span id="__span-5-43"><a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setUnitPrice</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">BigDecimal</span><span class="p">(</span><span class="n">price</span><span class="p">));</span>
+</span><span id="__span-5-44"><a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setStockQuantity</span><span class="p">(</span><span class="n">stock</span><span class="p">);</span>
+</span><span id="__span-5-45"><a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setReorderLevel</span><span class="p">(</span><span class="n">reorderLevel</span><span class="p">);</span>
+</span><span id="__span-5-46"><a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setSupplier</span><span class="p">(</span><span class="n">supplier</span><span class="p">);</span>
+</span><span id="__span-5-47"><a id="__codelineno-5-47" name="__codelineno-5-47" href="#__codelineno-5-47"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setActive</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-5-48"><a id="__codelineno-5-48" name="__codelineno-5-48" href="#__codelineno-5-48"></a><span class="w">        </span><span class="n">product</span><span class="p">.</span><span class="na">setLastRestockedDate</span><span class="p">(</span><span class="n">LocalDate</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">minusDays</span><span class="p">(</span><span class="n">restockedDaysAgo</span><span class="p">));</span>
+</span><span id="__span-5-49"><a id="__codelineno-5-49" name="__codelineno-5-49" href="#__codelineno-5-49"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">product</span><span class="p">;</span>
+</span><span id="__span-5-50"><a id="__codelineno-5-50" name="__codelineno-5-50" href="#__codelineno-5-50"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-5-51"><a id="__codelineno-5-51" name="__codelineno-5-51" href="#__codelineno-5-51"></a><span class="p">}</span>
 </span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">Escribe los seis completos, no los abrevies</p>
+<p>Es tentador dejar un comentario tipo <code>// ... el resto de los
+productos</code> y copiar el primero nada más para confirmar que arranca. No
+lo hagas: <code>sku</code> tiene <code>unique = true</code> en la entidad, así que si dos
+productos de muestra terminan con el mismo SKU (por ejemplo, porque
+copiaste y pegaste el primero varias veces sin cambiarlo), Hibernate
+tira una excepción de restricción violada al sembrar los datos, y la
+aplicación ni siquiera termina de arrancar, con un stack trace largo:
+justo lo que no quieres ver en medio de un taller en vivo.</p>
+</div>
 <div class="admonition abstract">
 <p class="admonition-title">Spring al paso: <code>ApplicationRunner</code></p>
 <p>Cualquier bean que implemente <code>ApplicationRunner</code> corre su método
@@ -1017,7 +1130,7 @@ arrancar. Es el lugar correcto para sembrar datos de arranque sin
 escribir SQL a mano.</p>
 </div>
 <hr />
-<h2 id="parte-4-conectar-la-vista-al-servicio-real">Parte 4: Conectar la vista al servicio real<a class="headerlink" href="#parte-4-conectar-la-vista-al-servicio-real" title="Permanent link">&para;</a></h2>
+<h2 id="parte-4-conectar-la-vista-y-el-bug-que-vas-a-ver-en-vivo">Parte 4: Conectar la vista, y el bug que vas a ver en vivo<a class="headerlink" href="#parte-4-conectar-la-vista-y-el-bug-que-vas-a-ver-en-vivo" title="Permanent link">&para;</a></h2>
 <p>Inyectamos <code>ProductService</code> en el constructor de la vista: inyección de
 dependencias normal de Spring, sin anotaciones especiales, porque Vaadin ya
 registra las vistas como beans de Spring por nosotros.</p>
@@ -1029,7 +1142,10 @@ registra las vistas como beans de Spring por nosotros.</p>
 </span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>Reemplaza la lista en memoria por llamadas al servicio en los tres lugares
-donde antes usábamos <code>products</code>:</p>
+donde antes usábamos <code>products</code>. En <code>save()</code>, además, ya no hace falta la
+rama <code>if (wasNew)/else</code> de la Sesión 5: con JPA, <code>productService.save(...)</code>
+decide solo si inserta o actualiza (lo vas a ver en detalle en la Parte 6),
+así que por ahora la reducimos a una sola línea:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateVisibleProducts</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span><span class="w"> </span><span class="n">all</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">productService</span><span class="p">.</span><span class="na">findAll</span><span class="p">();</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span><span class="w"> </span><span class="n">filtered</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">all</span><span class="p">;</span>
@@ -1039,23 +1155,341 @@ donde antes usábamos <code>products</code>:</p>
 </span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="n">visibleProducts</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">filtered</span><span class="p">);</span>
 </span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="p">}</span>
 </span></code></pre></div>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// en save():</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">productService</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">product</span><span class="p">);</span><span class="w">   </span><span class="c1">// reemplaza el nextProductId++ / products.add(product)</span>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// en save(), reemplazando toda la rama if (wasNew)/else de la Sesión 5:</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">productService</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">product</span><span class="p">);</span>
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
 </span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="c1">// en confirmDelete():</span>
 </span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="n">productService</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="n">product</span><span class="p">);</span><span class="w"> </span><span class="c1">// reemplaza products.remove(product)</span>
 </span></code></pre></div>
 <p>Puedes borrar el método <code>getSampleProducts()</code> y el campo <code>products</code>, ya no
-se usan.</p>
-<p>Reinicia el servidor por completo (esto sí necesita reinicio, no hot
-reload, porque cambiamos el datasource) y confirma que la tabla carga desde la
-base real.</p>
-<p><img alt="La tabla cargando los mismos productos, ahora desde H2" src="images/sesion6-backend-real.png" /></p>
+se usan. Reinicia el servidor por completo (esto sí necesita reinicio, no
+hot reload, porque cambiamos el datasource) y confirma que la tabla carga
+desde la base real.</p>
+<p>Ahora el momento que importa: selecciona un producto, cambia su nombre o su
+precio, y dale Guardar.</p>
+<div class="admonition danger">
+<p class="admonition-title">El grid se queda con el valor viejo, y el KPI también</p>
+<p>El guardado en sí funciona: si abres la consola de H2
+(<code>/h2-console</code>) y consultas la tabla <code>product</code>, el valor nuevo está
+ahí. Pero la fila en el grid sigue mostrando el valor de antes, y si
+editaste el precio, el KPI de "Valor total del inventario" tampoco se
+movió. <code>Notification.show("Producto guardado")</code> aparece igual: el
+problema no es que algo lance una excepción, es que nada en pantalla
+se entera de que hubo un cambio.</p>
+<p>Antes de seguir a la Parte 5: ¿por qué? Tienes todas las piezas para
+entenderlo. Repasa qué hace que un <code>Signal.effect</code> se vuelva a
+ejecutar, y qué le acabamos de agregar a <code>Product</code> en la Parte 1.</p>
+</div>
+<hr />
+<h2 id="parte-5-por-que-pasa-identidad-de-jpa-contra-igualdad-de-valor-de-signals">Parte 5: Por qué pasa: identidad de JPA contra igualdad de valor de Signals<a class="headerlink" href="#parte-5-por-que-pasa-identidad-de-jpa-contra-igualdad-de-valor-de-signals" title="Permanent link">&para;</a></h2>
+<p><code>visibleProducts.set(filtered)</code> solo dispara los efectos que dependen de él
+si el valor nuevo es distinto del anterior, y "distinto" para un
+<code>ValueSignal&lt;List&lt;Product&gt;&gt;</code> significa <code>!filtered.equals(anterior)</code>, que en
+una lista significa comparar elemento por elemento con el <code>equals()</code> de
+cada uno.</p>
+<p>Ahí está el problema. En la Parte 1 le dimos a <code>Product</code> un <code>equals()</code> que
+compara solo el id, a propósito, porque es la práctica correcta para una
+entidad JPA. Edita el nombre de un producto: el id no cambia.
+<code>productService.findAll()</code> trae una lista con el mismo id, en el mismo
+orden. Elemento por elemento, la lista nueva es <code>equals()</code> a la anterior,
+aunque el <code>name</code> de adentro sea distinto. Para el signal, no cambió nada.
+El efecto que pinta el grid, y los <code>Signal.computed</code> que calculan los
+KPIs a partir del mismo <code>visibleProducts</code>, nunca se vuelven a ejecutar.</p>
+<div class="admonition danger">
+<p class="admonition-title">El choque de contratos</p>
+<p>JPA necesita que <code>equals()</code> compare identidad de fila (el id): es lo
+que le permite, por ejemplo, no duplicar una entidad en un <code>Set</code>
+cuando Hibernate la carga dos veces. Signals necesita que <code>equals()</code>
+compare el valor completo del objeto: es lo que le permite decidir si
+algo cambió de verdad. Las dos necesidades son legítimas, y son
+incompatibles en la misma clase. No hay una anotación ni un flag que
+arregle esto: es un choque de diseño, no un error de configuración.</p>
+</div>
+<p>Podrías pensar en traer de vuelta <code>grid.getDataProvider().refreshItem(product)</code>,
+el truco de la Sesión 5. No resuelve nada acá, y no porque falle: el
+problema es que solo habla con el grid. <code>totalInventoryValue</code> y
+<code>lowStockCount</code> son <code>Signal.computed</code> que dependen de <code>visibleProducts</code>, no
+del grid, así que <code>refreshItem</code> no los toca. Terminarías con la fila del
+grid bien y el KPI mintiendo, y tendrías que inventar un mecanismo de
+refresco manual distinto para cada componente que dependa de estos datos.
+Eso es exactamente lo que las Sesiones 2 y 3 te enseñaron a evitar: una
+sola fuente de verdad (<code>visibleProducts</code>) de la que todo lo demás se
+deriva. Parchar el grid a mano rompe esa idea, no la salva.</p>
+<p>Esto no es un problema exclusivo de esta guía, ni de Vaadin Signals:
+cualquier librería de estado reactivo que compare por valor (y la mayoría
+lo hace) choca contra cualquier entidad JPA bien diseñada (y una entidad
+bien diseñada compara por id). La solución no está en elegir la peor de
+las dos prácticas, sino en no usar la misma clase para las dos cosas.</p>
+<hr />
+<h2 id="parte-6-la-solucion-un-record-como-proyeccion-de-vista">Parte 6: La solución: un record como proyección de vista<a class="headerlink" href="#parte-6-la-solucion-un-record-como-proyeccion-de-vista" title="Permanent link">&para;</a></h2>
+<p><code>Product</code> sigue siendo la entidad que el formulario edita: el <code>Binder</code>
+necesita un bean mutable, con setters, y eso no cambia. Lo que cambia es
+qué le mostramos al <code>Grid</code>. En vez de mostrarle entidades, le mostramos un
+<code>record</code> armado a propósito para eso: una proyección de vista, un objeto
+que solo existe para representar una fila en pantalla, no para persistir
+nada.</p>
+<p><code>product/ProductRow.java</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.baqjug.stockpilot.product</span><span class="p">;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.math.BigDecimal</span><span class="p">;</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">ProductRow</span><span class="p">(</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">        </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">sku</span><span class="p">,</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">        </span><span class="n">ProductCategory</span><span class="w"> </span><span class="n">category</span><span class="p">,</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">        </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">unitPrice</span><span class="p">,</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">stockQuantity</span><span class="p">,</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">reorderLevel</span><span class="p">,</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">supplier</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">ProductRow</span><span class="w"> </span><span class="nf">from</span><span class="p">(</span><span class="n">Product</span><span class="w"> </span><span class="n">product</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ProductRow</span><span class="p">(</span>
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="w">                </span><span class="n">product</span><span class="p">.</span><span class="na">getId</span><span class="p">(),</span>
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="w">                </span><span class="n">product</span><span class="p">.</span><span class="na">getSku</span><span class="p">(),</span>
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="w">                </span><span class="n">product</span><span class="p">.</span><span class="na">getName</span><span class="p">(),</span>
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="w">                </span><span class="n">product</span><span class="p">.</span><span class="na">getCategory</span><span class="p">(),</span>
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="w">                </span><span class="n">product</span><span class="p">.</span><span class="na">getUnitPrice</span><span class="p">(),</span>
+</span><span id="__span-9-22"><a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a><span class="w">                </span><span class="n">product</span><span class="p">.</span><span class="na">getStockQuantity</span><span class="p">(),</span>
+</span><span id="__span-9-23"><a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="w">                </span><span class="n">product</span><span class="p">.</span><span class="na">getReorderLevel</span><span class="p">(),</span>
+</span><span id="__span-9-24"><a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="w">                </span><span class="n">product</span><span class="p">.</span><span class="na">getSupplier</span><span class="p">());</span>
+</span><span id="__span-9-25"><a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-9-26"><a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a>
+</span><span id="__span-9-27"><a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">lowStock</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-28"><a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">stockQuantity</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">reorderLevel</span><span class="p">;</span>
+</span><span id="__span-9-29"><a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-9-30"><a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="admonition success">
+<p class="admonition-title">Por qué esto sí funciona</p>
+<p>Un <code>record</code> genera <code>equals()</code> y <code>hashCode()</code> a partir de todos sus
+componentes: no le puedes cambiar el significado como acabamos de
+hacer con <code>Product</code>. Dos <code>ProductRow</code> son iguales si y solo si <code>id</code>,
+<code>sku</code>, <code>name</code>, <code>category</code>, <code>unitPrice</code>, <code>stockQuantity</code>,
+<code>reorderLevel</code> y <code>supplier</code> coinciden, todos. Edita el precio de un
+producto: el <code>ProductRow</code> nuevo tiene el mismo <code>id</code> pero un
+<code>unitPrice</code> distinto, así que ya no es <code>equals()</code> al anterior. La
+lista cambia. El signal lo detecta solo. No hay <code>refreshItem</code>, no hay
+truco, no hay nada que acordarte de llamar.</p>
+</div>
+<p>Ahora actualizamos la vista para que trabaje con <code>ProductRow</code> en todo lo
+que es presentación, y con <code>Product</code> solo donde hace falta: el formulario
+y el guardado.</p>
+<p>El grid y el signal de datos visibles cambian de tipo:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Grid</span><span class="o">&lt;</span><span class="n">ProductRow</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Grid</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">ProductRow</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">visibleProducts</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">());</span>
+</span></code></pre></div>
+<p><code>selectedProduct</code> no cambia de tipo: sigue siendo <code>ValueSignal&lt;Product&gt;</code>,
+porque el formulario y el <code>Binder</code> necesitan la entidad completa, no la
+proyección.</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span><span class="w"> </span><span class="n">selectedProduct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ValueSignal</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span>
+</span></code></pre></div>
+<p>Las columnas del grid, definidas en <code>configureGrid()</code>, ahora leen del
+record con sus accesores generados (<code>sku()</code>, <code>name()</code>, sin <code>get</code>), y la
+marca de stock bajo de la Sesión 3 pasa de <code>Product::isLowStock</code> a
+<code>ProductRow::lowStock</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">ProductRow</span><span class="p">::</span><span class="n">sku</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"SKU"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">ProductRow</span><span class="p">::</span><span class="n">name</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Nombre"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">ProductRow</span><span class="p">::</span><span class="n">category</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Categoría"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">ProductRow</span><span class="p">::</span><span class="n">unitPrice</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Precio"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">ProductRow</span><span class="p">::</span><span class="n">stockQuantity</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Stock"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">ProductRow</span><span class="p">::</span><span class="n">supplier</span><span class="p">).</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Proveedor"</span><span class="p">).</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="n">grid</span><span class="p">.</span><span class="na">setPartNameGenerator</span><span class="p">(</span><span class="n">row</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">row</span><span class="p">.</span><span class="na">lowStock</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">"low-stock-row"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span>
+</span></code></pre></div>
+<p>Y los dos <code>Signal.computed</code> de la Sesión 3, sobre el mismo
+<code>visibleProducts</code>, ahora leyendo del record:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Signal</span><span class="o">&lt;</span><span class="n">BigDecimal</span><span class="o">&gt;</span><span class="w"> </span><span class="n">totalInventoryValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Signal</span><span class="p">.</span><span class="na">computed</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">        </span><span class="n">visibleProducts</span><span class="p">.</span><span class="na">get</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="na">unitPrice</span><span class="p">().</span><span class="na">multiply</span><span class="p">(</span><span class="n">BigDecimal</span><span class="p">.</span><span class="na">valueOf</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="na">stockQuantity</span><span class="p">())))</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">                </span><span class="p">.</span><span class="na">reduce</span><span class="p">(</span><span class="n">BigDecimal</span><span class="p">.</span><span class="na">ZERO</span><span class="p">,</span><span class="w"> </span><span class="n">BigDecimal</span><span class="p">::</span><span class="n">add</span><span class="p">));</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Signal</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lowStockCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Signal</span><span class="p">.</span><span class="na">computed</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">        </span><span class="n">visibleProducts</span><span class="p">.</span><span class="na">get</span><span class="p">().</span><span class="na">stream</span><span class="p">().</span><span class="na">filter</span><span class="p">(</span><span class="n">ProductRow</span><span class="p">::</span><span class="n">lowStock</span><span class="p">).</span><span class="na">count</span><span class="p">());</span>
+</span></code></pre></div>
+<p>Con la búsqueda, aprovechamos el cambio para sacarla de Java del todo.
+Filtrar con <code>findAll()</code> y un stream, como hacíamos desde la Sesión 2, es un
+antipatrón que con seis productos no se nota: trae la tabla completa a
+memoria, la deserializa entera en objetos, y descarta la mayoría en el
+propio servidor. En <code>ProductRepository</code>, agregamos una consulta que hace
+ese trabajo en la base:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.baqjug.stockpilot.product</span><span class="p">;</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.data.jpa.repository.JpaRepository</span><span class="p">;</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.data.jpa.repository.Query</span><span class="p">;</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.data.repository.query.Param</span><span class="p">;</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">ProductRepository</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">JpaRepository</span><span class="o">&lt;</span><span class="n">Product</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">    </span><span class="nd">@Query</span><span class="p">(</span><span class="s">"""</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="s">            select p from Product p</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="s">            where lower(p.sku) like lower(concat('%', :query, '%'))</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="s">               or lower(p.name) like lower(concat('%', :query, '%'))</span>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="s">               or lower(p.supplier) like lower(concat('%', :query, '%'))</span>
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="s">            """</span><span class="p">)</span>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="nd">@Param</span><span class="p">(</span><span class="s">"query"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">query</span><span class="p">);</span>
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="admonition abstract">
+<p class="admonition-title">Spring al paso: <code>@Query</code> con text block</p>
+<p><code>@Query</code> te deja escribir JPQL (el lenguaje de consultas de JPA, que
+habla de entidades y sus campos, no de tablas y columnas) para los
+casos donde el nombre del método no alcanza para expresar la
+consulta. El text block de Java (las triples comillas) te deja
+escribirla en varias líneas sin concatenar strings a mano.
+<code>lower(...) like lower(concat('%', :query, '%'))</code> es el equivalente en
+JPQL de "contiene, sin importar mayúsculas": el <code>LIKE '%valor%'</code> de
+SQL de toda la vida. <code>:query</code> es un parámetro con nombre, que
+<code>@Param("query")</code> conecta con el argumento del método.</p>
+</div>
+<p><code>ProductService</code> gana dos métodos: <code>findById</code>, que va a necesitar el
+selector de filas más abajo, y <code>findRows</code>, que reemplaza el filtrado en
+Java por una llamada al repositorio y mapea el resultado a <code>ProductRow</code>:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.baqjug.stockpilot.product</span><span class="p">;</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Service</span><span class="p">;</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Optional</span><span class="p">;</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="nd">@Service</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ProductService</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ProductRepository</span><span class="w"> </span><span class="n">repository</span><span class="p">;</span>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">ProductService</span><span class="p">(</span><span class="n">ProductRepository</span><span class="w"> </span><span class="n">repository</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">repository</span><span class="p">;</span>
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findAll</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">repository</span><span class="p">.</span><span class="na">findAll</span><span class="p">();</span>
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">repository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>
+</span><span id="__span-15-24"><a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">ProductRow</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findRows</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-25"><a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a><span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">query</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">query</span><span class="p">.</span><span class="na">isBlank</span><span class="p">())</span>
+</span><span id="__span-15-26"><a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a><span class="w">                </span><span class="o">?</span><span class="w"> </span><span class="n">repository</span><span class="p">.</span><span class="na">findAll</span><span class="p">()</span>
+</span><span id="__span-15-27"><a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a><span class="w">                </span><span class="p">:</span><span class="w"> </span><span class="n">repository</span><span class="p">.</span><span class="na">search</span><span class="p">(</span><span class="n">query</span><span class="p">);</span>
+</span><span id="__span-15-28"><a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">products</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">map</span><span class="p">(</span><span class="n">ProductRow</span><span class="p">::</span><span class="n">from</span><span class="p">).</span><span class="na">toList</span><span class="p">();</span>
+</span><span id="__span-15-29"><a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-15-30"><a id="__codelineno-15-30" name="__codelineno-15-30" href="#__codelineno-15-30"></a>
+</span><span id="__span-15-31"><a id="__codelineno-15-31" name="__codelineno-15-31" href="#__codelineno-15-31"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Product</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="n">Product</span><span class="w"> </span><span class="n">product</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-32"><a id="__codelineno-15-32" name="__codelineno-15-32" href="#__codelineno-15-32"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">repository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">product</span><span class="p">);</span>
+</span><span id="__span-15-33"><a id="__codelineno-15-33" name="__codelineno-15-33" href="#__codelineno-15-33"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-15-34"><a id="__codelineno-15-34" name="__codelineno-15-34" href="#__codelineno-15-34"></a>
+</span><span id="__span-15-35"><a id="__codelineno-15-35" name="__codelineno-15-35" href="#__codelineno-15-35"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="n">Product</span><span class="w"> </span><span class="n">product</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-36"><a id="__codelineno-15-36" name="__codelineno-15-36" href="#__codelineno-15-36"></a><span class="w">        </span><span class="n">repository</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="n">product</span><span class="p">);</span>
+</span><span id="__span-15-37"><a id="__codelineno-15-37" name="__codelineno-15-37" href="#__codelineno-15-37"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-15-38"><a id="__codelineno-15-38" name="__codelineno-15-38" href="#__codelineno-15-38"></a>
+</span><span id="__span-15-39"><a id="__codelineno-15-39" name="__codelineno-15-39" href="#__codelineno-15-39"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="nf">count</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-40"><a id="__codelineno-15-40" name="__codelineno-15-40" href="#__codelineno-15-40"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">repository</span><span class="p">.</span><span class="na">count</span><span class="p">();</span>
+</span><span id="__span-15-41"><a id="__codelineno-15-41" name="__codelineno-15-41" href="#__codelineno-15-41"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-15-42"><a id="__codelineno-15-42" name="__codelineno-15-42" href="#__codelineno-15-42"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Con eso, <code>updateVisibleProducts</code> pasa de las quince líneas de <code>stream()</code>
+que arrastramos desde la Sesión 2 a una sola:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateVisibleProducts</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">query</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">    </span><span class="n">visibleProducts</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">productService</span><span class="p">.</span><span class="na">findRows</span><span class="p">(</span><span class="n">query</span><span class="p">));</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">Filtrar en memoria no escala, aunque acá no lo notes</p>
+<p>Con seis productos de muestra, da lo mismo filtrar en Java o en SQL:
+el usuario no percibe la diferencia. Con seis mil, sí: cada tecla en
+el buscador traería la tabla entera por la red antes de descartar casi
+todo. La regla general para cualquier proyecto real: si un filtro se
+puede expresar en la consulta, no lo hagas después en un stream.</p>
+</div>
+<p>El listener de selección tiene un problema nuevo: el grid ahora entrega un
+<code>ProductRow</code> al hacer clic en una fila, pero <code>selectedProduct</code> necesita el
+<code>Product</code> completo para el <code>Binder</code>. Hay que ir a buscarlo:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">grid</span><span class="p">.</span><span class="na">addSelectionListener</span><span class="p">(</span><span class="n">event</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">selectedProduct</span><span class="p">.</span><span class="na">set</span><span class="p">(</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">        </span><span class="n">event</span><span class="p">.</span><span class="na">getFirstSelectedItem</span><span class="p">()</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">                </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">row</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">productService</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">row</span><span class="p">.</span><span class="na">id</span><span class="p">()).</span><span class="na">orElse</span><span class="p">(</span><span class="kc">null</span><span class="p">))</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">                </span><span class="p">.</span><span class="na">orElse</span><span class="p">(</span><span class="kc">null</span><span class="p">)));</span>
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Cada clic en una fila es una consulta más</p>
+<p><code>findById</code> es una consulta a la base, una por cada selección. Con seis
+productos y un usuario en vivo no lo vas a notar. En una tabla con
+miles de filas y selección frecuente, es un costo real del otro lado
+del ahorro de traer solo <code>ProductRow</code> (liviano) al grid: conviene
+tenerlo presente antes de asumir que la proyección sale gratis.</p>
+</div>
+<p>Por último, <code>save()</code>, sin ninguna de las ramas que tenía en la Sesión 5:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">save</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">    </span><span class="n">Product</span><span class="w"> </span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">selectedProduct</span><span class="p">.</span><span class="na">peek</span><span class="p">();</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">product</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">        </span><span class="k">return</span><span class="p">;</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">    </span><span class="kt">boolean</span><span class="w"> </span><span class="n">wasNew</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">isNewProduct</span><span class="p">(</span><span class="n">product</span><span class="p">);</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="w">        </span><span class="n">binder</span><span class="p">.</span><span class="na">writeBean</span><span class="p">(</span><span class="n">product</span><span class="p">);</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="w">        </span><span class="n">selectedProduct</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">productService</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">product</span><span class="p">));</span>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="w">        </span><span class="n">updateVisibleProducts</span><span class="p">(</span><span class="n">searchQuery</span><span class="p">.</span><span class="na">peek</span><span class="p">());</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="w">        </span><span class="n">Notification</span><span class="p">.</span><span class="na">show</span><span class="p">(</span><span class="n">wasNew</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">"Producto creado"</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">"Producto guardado"</span><span class="p">);</span>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">ValidationException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="w">        </span><span class="c1">// El formulario ya resalta los campos inválidos.</span>
+</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-18-15"><a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title"><code>selectedProduct.set(productService.save(product))</code>, no lo saltees</p>
+<p><code>repository.save(...)</code> no siempre devuelve el mismo objeto que le
+pasaste (mira el próximo recuadro para la razón completa). El efecto
+práctico: cuando el producto es nuevo, el <code>product</code> que tenías en la
+mano todavía tiene el id en <code>null</code>; la instancia que <code>save()</code> devuelve
+sí trae el id que la base acaba de generar. Si no actualizas
+<code>selectedProduct</code> con esa instancia, <code>isNewProduct()</code> sigue viendo un
+id <code>null</code> después de guardar, y el botón se queda diciendo "Crear"
+para un producto que ya existe.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Spring al paso: <code>repository.save()</code> no significa insertar, significa sincronizar</p>
+<p><code>save()</code> mira el id del objeto que le pasas. Si es <code>null</code>, hace un
+<code>persist</code> (un <code>INSERT</code>, y la base genera el id). Si tiene un valor,
+hace un <code>merge</code>: busca la fila con ese id y la actualiza, devolviendo
+la instancia gestionada por el <code>EntityManager</code>. Por eso no hay, ni
+hace falta, un método <code>update()</code> separado en <code>ProductService</code>: la
+misma llamada sirve para las dos cosas, según lo que traiga el objeto.
+Es también, otra vez, por qué no le puedes asignar un id a mano a un
+producto nuevo, la misma advertencia que la Parte 3 ya hace sobre
+escribir ids en un <code>data.sql</code>, aplicada ahora al código de la vista: si
+lo haces, <code>save()</code> va a interpretar que es una fila existente, va a
+intentar un <code>UPDATE</code> contra un id que no existe en la tabla, y esa
+fila nunca llega a insertarse.</p>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">Lo que se borra de la Sesión 5</p>
+<p>Cuatro cosas dejan de tener sentido con este cambio: el campo
+<code>nextProductId</code>, la asignación manual <code>product.setId(nextProductId++)</code>,
+la rama entera <code>if (wasNew) { ... } else { ... }</code> de <code>save()</code>, y la
+llamada a <code>grid.getDataProvider().refreshItem(product)</code>. <code>refreshItem</code>
+en particular era necesario cuando el grid mostraba objetos mutables
+en memoria (Sesión 5), y dejó de tener sentido en cuanto esos objetos
+pasaron a ser entidades JPA con <code>equals()</code> por id (Parte 5): con la
+proyección a <code>ProductRow</code>, el signal vuelve a detectar los cambios
+solo, sin ayuda de nadie. De paso, borra los imports de <code>ArrayList</code> y
+<code>Collectors</code> de la vista: ya no queda ningún filtro en Java que los
+necesite.</p>
+</div>
+<p><code>confirmDelete()</code> no cambia de forma, solo de a quién le pide el trabajo:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1">// en confirmDelete():</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="n">productService</span><span class="p">.</span><span class="na">delete</span><span class="p">(</span><span class="n">product</span><span class="p">);</span><span class="w"> </span><span class="c1">// reemplaza products.remove(product)</span>
+</span></code></pre></div>
+<p>Reinicia el servidor y repite la prueba: edita un producto, dale Guardar.
+Esta vez el grid se actualiza solo, y también el KPI de valor total si
+cambiaste el precio.</p>
+<p><img alt="La tabla actualizándose sola tras guardar, usando ProductRow" src="../images/sesion6-backend-real.png" /></p>
 <hr />
 <h2 id="cierre-de-la-sesion">Cierre de la sesión<a class="headerlink" href="#cierre-de-la-sesion" title="Permanent link">&para;</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>git<span class="w"> </span>add<span class="w"> </span>.
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"sesion-6: backend real con Spring Data JPA"</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>git<span class="w"> </span>branch<span class="w"> </span>sesion-6
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>git<span class="w"> </span>add<span class="w"> </span>.
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"sesion-6: backend real con JPA y ProductRow como proyección de vista"</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>git<span class="w"> </span>branch<span class="w"> </span>sesion-6
 </span></code></pre></div>
 <p>En la <a href="../sesion_7/">Sesión 7</a> agregamos navegación entre pantallas, y una
 segunda funcionalidad que demuestra en la práctica por qué package-by-feature
