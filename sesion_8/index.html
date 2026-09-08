@@ -736,6 +736,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#parte-4-el-precio-tambien-formateado-en-el-grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parte 4: El precio, también formateado en el Grid
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cierre-stockpilot-completo" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -813,18 +824,34 @@
 <p><strong>Rama</strong>: <code>sesion-8</code> (= <code>main</code>)
 <strong>Lo que vas a lograr</strong>: que StockPilot se vea como un producto, no como
 una demo: variantes de tema listas para usar, CSS propio para lo que las
-variantes no cubren, y (opcional) tu propia paleta de marca.</p>
+variantes no cubren, y (opcional) tu propia paleta de marca, todo
+construido en pasos chicos que puedes correr y mirar antes de seguir.</p>
 <hr />
 <h2 id="parte-1-variantes-de-tema-estilo-sin-escribir-css">Parte 1: Variantes de tema: estilo sin escribir CSS<a class="headerlink" href="#parte-1-variantes-de-tema-estilo-sin-escribir-css" title="Permanent link">&para;</a></h2>
-<p>Lo más rápido para darle personalidad a la UI son las <strong>variantes de
-tema</strong>: estilos predefinidos que ya vienen con cada componente.</p>
+<p>Lo más rápido para darle personalidad a la UI son las variantes de tema:
+estilos predefinidos que ya vienen con cada componente.</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">saveButton</span><span class="p">.</span><span class="na">addThemeVariants</span><span class="p">(</span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">LUMO_PRIMARY</span><span class="p">);</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">deleteButton</span><span class="p">.</span><span class="na">addThemeVariants</span><span class="p">(</span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">LUMO_ERROR</span><span class="p">,</span><span class="w"> </span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">LUMO_TERTIARY</span><span class="p">);</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">addButton</span><span class="p">.</span><span class="na">addThemeVariants</span><span class="p">(</span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">LUMO_PRIMARY</span><span class="p">);</span>
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Esta línea va en el constructor, no en la declaración del campo</p>
+<p><code>addThemeVariants</code> necesita que el botón ya exista como objeto, así
+que se llama sobre la instancia, típicamente justo después de crearla
+o donde armes el layout de botones en el constructor de la vista. No
+funciona como parte de la declaración del campo (<code>private final
+Button saveButton = new Button("Guardar");</code>), porque ahí todavía no
+hay un lugar natural para encadenar la llamada sin ensuciar la
+declaración.</p>
+</div>
+<p>Agrégala y corre la aplicación: Guardar debería verse en azul sólido, un
+cambio de una sola línea.</p>
+<p><img alt="Los botones con sus variantes de tema aplicadas" src="../images/sesion8-theme-variants.png" /></p>
+<p>Con eso comprobado, agrega las otras dos:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">deleteButton</span><span class="p">.</span><span class="na">addThemeVariants</span><span class="p">(</span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">LUMO_ERROR</span><span class="p">,</span><span class="w"> </span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">LUMO_TERTIARY</span><span class="p">);</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">addButton</span><span class="p">.</span><span class="na">addThemeVariants</span><span class="p">(</span><span class="n">ButtonVariant</span><span class="p">.</span><span class="na">LUMO_PRIMARY</span><span class="p">);</span>
 </span></code></pre></div>
 <p>Y en el diálogo de confirmación de la Sesión 5, la variante se pasa como
-texto:</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">dialog</span><span class="p">.</span><span class="na">setConfirmButtonTheme</span><span class="p">(</span><span class="s">"error primary"</span><span class="p">);</span>
+texto, no como constante:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">dialog</span><span class="p">.</span><span class="na">setConfirmButtonTheme</span><span class="p">(</span><span class="s">"error primary"</span><span class="p">);</span>
 </span></code></pre></div>
 <div class="admonition abstract">
 <p class="admonition-title">Vaadin al paso: variantes de tema</p>
@@ -835,88 +862,220 @@ botón con el color principal del tema; <code>LUMO_ERROR</code> lo pinta de rojo
 <code>LUMO_TERTIARY</code> le saca el borde. Puedes combinar varias a la vez, como
 en el botón Eliminar. Antes de escribir CSS a mano para algo, revisa si
 ya existe una variante: la documentación de cada componente en
-vaadin.com/docs las lista todas.</p>
+vaadin.com/docs las lista todas. El salto de "botón gris" a "botón azul
+sólido" con una sola línea es el mejor argumento a favor de este
+hábito.</p>
 </div>
-<p>Corre la app: Guardar debería verse en azul sólido, Eliminar en rojo.</p>
-<p><img alt="Los botones con sus variantes de tema aplicadas" src="images/sesion8-theme-variants.png" /></p>
+<p>Corre la aplicación de nuevo y confirma los tres botones. Con esto, las
+variantes ya hicieron todo lo que pueden hacer: fíjate en lo que sigue sin
+resolver. La barra de KPIs no tiene ni espaciado ni forma de tarjeta, y las
+filas de stock bajo, marcadas desde la Sesión 3 con
+<code>setPartNameGenerator</code>, todavía no tienen ningún color. Ninguna variante
+de tema cubre eso: para eso escribimos CSS de verdad, en la Parte 2.</p>
 <hr />
 <h2 id="parte-2-css-propio-para-lo-que-las-variantes-no-cubren">Parte 2: CSS propio, para lo que las variantes no cubren<a class="headerlink" href="#parte-2-css-propio-para-lo-que-las-variantes-no-cubren" title="Permanent link">&para;</a></h2>
-<p>Para el resto (las tarjetas de KPI de las Sesiones 3 y 7, y el color de
-las filas de stock bajo que marcamos en la Sesión 3) escribimos CSS de
-verdad.</p>
-<p>Primero, le decimos a Vaadin que cargue un tema propio. Crea
-<code>AppShell.java</code> en el paquete <code>shell/</code>:</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.baqjug.stockpilot.shell</span><span class="p">;</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.page.AppShellConfigurator</span><span class="p">;</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.theme.Theme</span><span class="p">;</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nd">@Theme</span><span class="p">(</span><span class="s">"stockpilot"</span><span class="p">)</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AppShell</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AppShellConfigurator</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">}</span>
+<p>Todo lo que sigue va en <code>Application.java</code>, la clase que ya generó
+start.vaadin.com en la raíz del proyecto (<code>com.baqjug.stockpilot</code>), tal
+como quedó desde la Sesión 1:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.baqjug.stockpilot</span><span class="p">;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.page.AppShellConfigurator</span><span class="p">;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.SpringApplication</span><span class="p">;</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="p">;</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="nd">@SpringBootApplication</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Application</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AppShellConfigurator</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">        </span><span class="n">SpringApplication</span><span class="p">.</span><span class="na">run</span><span class="p">(</span><span class="n">Application</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">No crees una clase <code>AppShell</code> aparte</p>
+<p>Si en algún momento leíste sobre Vaadin y viste una clase separada
+(algo como <code>AppShell.java implements AppShellConfigurator</code>) para
+configurar el tema, no la repliques acá. <code>Application</code> ya implementa
+<code>AppShellConfigurator</code>, y Vaadin solo permite <strong>una</strong> clase que lo
+haga en todo el proyecto. Si creas una segunda, la aplicación falla al
+arrancar con algo como esto:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Multiple classes implementing AppShellConfigurator were found.
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>However, only a single class implementing AppShellConfigurator
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>is allowed.
+</span></code></pre></div>
+<p>La solución no es elegir cuál de las dos clases borrar: es no crear
+la segunda. Todo lo de esta sesión (cargar Lumo, cargar tu CSS) se
+agrega directamente sobre <code>Application</code>.</p>
+</div>
+<p>También vas a ver por ahí ejemplos con <code>@Theme("stockpilot")</code>. Esa
+anotación está deprecada en Vaadin 25: el reemplazo es <code>@StyleSheet</code>, que
+es justo lo que armamos en los siguientes tres momentos.</p>
+<p><strong>Momento 1: cargar Lumo, explícitamente.</strong>
+Vaadin 25 cambió algo de fondo en cómo funciona el theming: los
+componentes ya no traen Lumo (el tema base, el que define cada
+<code>--lumo-*</code>) incorporado por defecto. Ahora se carga como cualquier otra
+hoja de estilos, con una línea explícita:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">package</span><span class="w"> </span><span class="nn">com.baqjug.stockpilot</span><span class="p">;</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.dependency.StyleSheet</span><span class="p">;</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.component.page.AppShellConfigurator</span><span class="p">;</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="kn">import</span><span class="w"> </span><span class="nn">com.vaadin.flow.theme.lumo.Lumo</span><span class="p">;</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.SpringApplication</span><span class="p">;</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="p">;</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="nd">@SpringBootApplication</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="n">Lumo</span><span class="p">.</span><span class="na">STYLESHEET</span><span class="p">)</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Application</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AppShellConfigurator</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">        </span><span class="n">SpringApplication</span><span class="p">.</span><span class="na">run</span><span class="p">(</span><span class="n">Application</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Corre la aplicación así, sin agregar nada más todavía. No debería verse
+ningún cambio: Lumo ya estaba activo por otra vía, así que los botones,
+campos y demás componentes se siguen viendo exactamente igual. El objetivo
+de este paso no es ver algo distinto, es entender que a partir de ahora
+Lumo se carga porque tu código lo pide, explícitamente, y no porque Vaadin
+lo dé por hecho.</p>
+<p><strong>Momento 2: el archivo vacío, y confirmar la conexión.</strong>
+Agrega la segunda anotación, siempre después de la de Lumo (el orden
+importa: tu CSS tiene que cargar después del tema base, para poder
+sobreescribirlo):</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="n">Lumo</span><span class="p">.</span><span class="na">STYLESHEET</span><span class="p">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nd">@StyleSheet</span><span class="p">(</span><span class="s">"styles.css"</span><span class="p">)</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Application</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AppShellConfigurator</span><span class="w"> </span><span class="p">{</span>
+</span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">La ruta del archivo cambió, y si te equivocas no hay ningún error</p>
+<p>Con <code>@Theme</code>, el CSS vivía en <code>frontend/themes/stockpilot/</code>. Con
+<code>@StyleSheet</code>, va en un lugar completamente distinto:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>src/main/resources/META-INF/resources/styles.css
+</span></code></pre></div>
+<p>Si lo dejas en la ruta vieja, o en cualquier otra, la aplicación
+arranca sin problema, no aparece ningún error ni advertencia en la
+consola, y tu CSS simplemente no se aplica nunca. Es el peor tipo de
+falla para un taller en vivo: no hay nada que depurar porque no hay
+ningún síntoma más que "no pasó nada". Por eso el siguiente paso, una
+regla de una sola línea, es la manera de confirmar la conexión antes
+de escribir nada más.</p>
+</div>
+<p>Crea <code>src/main/resources/META-INF/resources/styles.css</code> con una sola
+regla, deliberadamente tonta, solo para comprobar que el archivo se está
+cargando:</p>
+<div class="language-css highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">.</span><span class="nc">app-name</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="kc">red</span><span class="p">;</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Reinicia el servidor (los cambios de tema a veces no aplican con hot
+reload) y mira el nombre de la aplicación en el drawer. Si se puso rojo,
+la conexión funciona. Si sigue con su color normal, algo está mal en la
+ruta del archivo, y es mucho más fácil descubrirlo con una regla de una
+línea que con las cuarenta que vienen en el momento 3.</p>
+<div class="admonition tip">
+<p class="admonition-title">Verificación de más peso: la pestaña Network</p>
+<p>El color es rápido de ver, pero si quieres estar seguro sin depender
+de la vista, abre las herramientas de desarrollador del navegador, la
+pestaña Network, filtra por "styles.css", y recarga. Tiene que
+responder <code>200</code>. Un <code>404</code> ahí confirma exactamente lo que sospechas: el
+archivo no está donde Vaadin lo está buscando.</p>
+</div>
+<p><strong>Momento 3: el CSS de verdad, en tres bloques.</strong>
+Con la conexión confirmada, reemplaza la regla de prueba por el primer
+bloque real: el nombre de la app con su estilo definitivo, y la barra y
+las tarjetas de KPI.</p>
+<div class="language-css highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">.</span><span class="nc">app-name</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="kc">bold</span><span class="p">;</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">1.1</span><span class="kt">rem</span><span class="p">;</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="p">}</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="p">.</span><span class="nc">kpi-bar</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="k">gap</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-space-m</span><span class="p">);</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-space-m</span><span class="p">)</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="k">flex-wrap</span><span class="p">:</span><span class="w"> </span><span class="kc">wrap</span><span class="p">;</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="p">}</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="p">.</span><span class="nc">kpi-card</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">    </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-contrast-</span><span class="mi">5</span><span class="n">pct</span><span class="p">);</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">    </span><span class="k">border-radius</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-border-radius-l</span><span class="p">);</span>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="w">    </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-space-m</span><span class="p">);</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span>
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="w">    </span><span class="k">flex-direction</span><span class="p">:</span><span class="w"> </span><span class="kc">column</span><span class="p">;</span>
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="w">    </span><span class="k">gap</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-space-xs</span><span class="p">);</span>
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="w">    </span><span class="k">min-width</span><span class="p">:</span><span class="w"> </span><span class="mi">220</span><span class="kt">px</span><span class="p">;</span>
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Cada tarjeta es un <code>Div</code> con dos <code>Span</code> adentro (el título y el valor):
+sin <code>display: flex</code> y <code>flex-direction: column</code>, esos dos <code>Span</code> caerían
+uno al lado del otro, pegados, porque ese es el flujo normal de dos
+elementos en línea. <code>flex-direction: column</code> los apila; <code>gap</code> les pone aire
+entre sí sin necesitar un margen manual en cada uno. En <code>.kpi-bar</code>, el
+mismo <code>gap</code> separa una tarjeta de la siguiente, y <code>flex-wrap: wrap</code> deja
+que las tarjetas bajen a una segunda fila en una pantalla angosta en vez
+de desbordarse.</p>
+<p>Corre la aplicación: la barra de KPIs ya tiene forma de tarjetas, en fila,
+con separación.</p>
+<p>Segundo bloque, la jerarquía tipográfica dentro de cada tarjeta:</p>
+<div class="language-css highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">.</span><span class="nc">kpi-title</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-font-size-s</span><span class="p">);</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-secondary-text-color</span><span class="p">);</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="p">}</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="p">.</span><span class="nc">kpi-value</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-font-size-xxl</span><span class="p">);</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">    </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="kc">bold</span><span class="p">;</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>El título chico y de un gris apagado, el valor grande y en negrita: el ojo
+va directo al número, que es el dato que importa, y el título queda como
+contexto secundario. Corre la aplicación y confirma la diferencia de
+tamaño entre el título y el valor de cada tarjeta.</p>
+<p>Tercer bloque, las filas de stock bajo. Este selector merece más
+explicación que los anteriores, porque no es CSS normal:</p>
+<div class="language-css highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c">/* Esto NO funciona, y no hay ningún error que te avise */</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="p">.</span><span class="nc">low-stock-row</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-error-color-</span><span class="mi">10</span><span class="n">pct</span><span class="p">);</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-css highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c">/* Esto sí funciona */</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nt">vaadin-grid</span><span class="p">::</span><span class="nd">part</span><span class="o">(</span><span class="nt">low-stock-row</span><span class="o">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-error-color-</span><span class="mi">10</span><span class="n">pct</span><span class="p">);</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="p">}</span>
 </span></code></pre></div>
 <div class="admonition abstract">
-<p class="admonition-title">Vaadin al paso: <code>@Theme</code> y <code>AppShellConfigurator</code></p>
-<p><code>AppShellConfigurator</code> es una interfaz "marcador": cualquier clase que
-la implemente puede configurar aspectos globales de la aplicación que
-no pertenecen a ninguna vista en particular (el <code>&lt;head&gt;</code> del HTML, el
-tema, metadatos). <code>@Theme("stockpilot")</code> le dice a Vaadin que busque y
-cargue <code>frontend/themes/stockpilot/styles.css</code> como hoja de estilos
-global, por encima de los estilos base de Lumo.</p>
+<p class="admonition-title">Por qué <code>::part()</code>, y no una clase normal</p>
+<p><code>Grid</code> es un componente web que renderiza sus filas dentro de un
+shadow DOM: un árbol de elementos aparte, encapsulado, que el CSS de
+tu página no puede atravesar desde afuera. Escribir <code>.low-stock-row {
+}</code> en <code>styles.css</code> es CSS perfectamente válido, pero busca un elemento
+con <code>class="low-stock-row"</code> en el documento normal, y ese elemento no
+existe ahí: vive adentro del shadow DOM del grid, fuera del alcance de
+ese selector. Por eso no pasa nada, y por eso tampoco hay ningún error:
+para el navegador, la regla es válida, simplemente no encuentra a
+quién aplicársela.</p>
+<p><code>setPartNameGenerator</code>, que escribiste en la Sesión 3, no le pone una
+clase CSS a la fila: le pone un atributo <code>part</code>, que es la manera en
+que un componente con shadow DOM expone deliberadamente ciertos
+elementos internos para que sí se puedan estilar desde afuera.
+<code>vaadin-grid::part(low-stock-row)</code> es un pseudo-elemento CSS diseñado
+exactamente para eso: "la parte de <code>vaadin-grid</code> marcada con
+<code>part="low-stock-row"</code>", cruzando el límite del shadow DOM por la
+puerta que el propio componente dejó abierta a propósito.</p>
 </div>
-<p>Crea el archivo <code>frontend/themes/stockpilot/styles.css</code>:</p>
-<div class="language-css highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">.</span><span class="nc">app-name</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="kc">bold</span><span class="p">;</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">1.1</span><span class="kt">rem</span><span class="p">;</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">}</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">.</span><span class="nc">kpi-bar</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="k">gap</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-space-m</span><span class="p">);</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-space-m</span><span class="p">)</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="k">flex-wrap</span><span class="p">:</span><span class="w"> </span><span class="kc">wrap</span><span class="p">;</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="p">}</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="p">.</span><span class="nc">kpi-card</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-contrast-</span><span class="mi">5</span><span class="n">pct</span><span class="p">);</span>
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span><span class="k">border-radius</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-border-radius-l</span><span class="p">);</span>
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-space-m</span><span class="p">);</span>
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">    </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span>
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">    </span><span class="k">flex-direction</span><span class="p">:</span><span class="w"> </span><span class="kc">column</span><span class="p">;</span>
-</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">    </span><span class="k">gap</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-space-xs</span><span class="p">);</span>
-</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">    </span><span class="k">min-width</span><span class="p">:</span><span class="w"> </span><span class="mi">220</span><span class="kt">px</span><span class="p">;</span>
-</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="p">}</span>
-</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
-</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="p">.</span><span class="nc">kpi-title</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="w">    </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-font-size-s</span><span class="p">);</span>
-</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">    </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-secondary-text-color</span><span class="p">);</span>
-</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="p">}</span>
-</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>
-</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="p">.</span><span class="nc">kpi-value</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="w">    </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-font-size-xxl</span><span class="p">);</span>
-</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a><span class="w">    </span><span class="k">font-weight</span><span class="p">:</span><span class="w"> </span><span class="kc">bold</span><span class="p">;</span>
-</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="p">}</span>
-</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>
-</span><span id="__span-3-32"><a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="c">/* Filas de stock bajo -- la etiqueta la generó grid.setPartNameGenerator</span>
-</span><span id="__span-3-33"><a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="c">   en la Sesión 3, acá recién le damos color. */</span>
-</span><span id="__span-3-34"><a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="nt">vaadin-grid</span><span class="p">::</span><span class="nd">part</span><span class="o">(</span><span class="nt">low-stock-row</span><span class="o">)</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-35"><a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a><span class="w">    </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="nf">var</span><span class="p">(</span><span class="nv">--lumo-error-color-</span><span class="mi">10</span><span class="n">pct</span><span class="p">);</span>
-</span><span id="__span-3-36"><a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="p">}</span>
-</span></code></pre></div>
+<p>Reinicia el servidor y confirma que las filas de stock bajo aparecen en
+rojo suave.</p>
+<p><img alt="Las filas de stock bajo resaltadas y las tarjetas de KPI con estilo" src="../images/sesion8-css-propio.png" /></p>
 <div class="admonition tip">
 <p class="admonition-title">Las variables <code>--lumo-*</code></p>
-<p>Lumo, el tema base de Vaadin, define sus colores, espaciados y
-tipografías como variables CSS (<code>--lumo-primary-color</code>,
-<code>--lumo-space-m</code>, etc.). Usarlas en tu propio CSS, en vez de valores
-fijos, hace que tus estilos respeten automáticamente el modo claro/oscuro
-y cualquier ajuste de marca que hagas más adelante.</p>
+<p>Lumo define sus colores, espaciados y tipografías como variables CSS
+(<code>--lumo-primary-color</code>, <code>--lumo-space-m</code>, etc.). Usarlas en tu propio
+CSS, en vez de valores fijos, hace que tus estilos respeten
+automáticamente el modo claro/oscuro y cualquier ajuste de marca que
+hagas más adelante.</p>
 </div>
-<p>Reinicia el servidor (los cambios de tema a veces no aplican con hot
-reload) y confirma que las filas de stock bajo aparecen en rojo suave, y
-que las tarjetas de KPI ya tienen forma de tarjeta.</p>
-<p><img alt="Las filas de stock bajo resaltadas y las tarjetas de KPI con estilo" src="images/sesion8-css-propio.png" /></p>
 <p>Un último detalle, opcional pero prolijo: un poco de espacio arriba del
 formulario de detalle:</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">detailForm</span><span class="p">.</span><span class="na">getStyle</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"padding-top"</span><span class="p">,</span><span class="w"> </span><span class="s">"30px"</span><span class="p">);</span>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">detailForm</span><span class="p">.</span><span class="na">getStyle</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="s">"padding-top"</span><span class="p">,</span><span class="w"> </span><span class="s">"30px"</span><span class="p">);</span>
 </span></code></pre></div>
 <div class="admonition abstract">
 <p class="admonition-title">Vaadin al paso: <code>getStyle()</code></p>
@@ -928,22 +1087,118 @@ sigue siendo mejor.</p>
 </div>
 <hr />
 <h2 id="parte-3-tu-propia-paleta-de-marca-opcional">Parte 3: Tu propia paleta de marca (opcional)<a class="headerlink" href="#parte-3-tu-propia-paleta-de-marca-opcional" title="Permanent link">&para;</a></h2>
-<p>Vaadin tiene un generador de temas donde puedes armar visualmente tu propia
-paleta y exportar el CSS resultante. Elige una paleta, exporta el CSS, y
-pégalo debajo del bloque de estilos propios en <code>styles.css</code>. No hace falta
-tocar ni una línea de Java para esto: es la ventaja de que el theming esté
-completamente separado de la lógica.</p>
-<p><img alt="Tu paleta de marca aplicada a StockPilot" src="images/sesion8-marca-propia.png" /></p>
+<p>Vaadin tenía un generador visual de temas, pero está pensado para Vaadin
+10: produce <code>&lt;dom-module&gt;</code> y <code>&lt;custom-style&gt;</code>, dos mecanismos que ya no
+existen en Vaadin 25. Vamos a hacer en su lugar lo que muestra la
+documentación actual: redefinir las variables <code>--lumo-*</code> a mano,
+directamente en <code>styles.css</code>.</p>
+<p>Agrega este bloque al principio de <code>styles.css</code>, antes de las reglas que
+ya escribiste en la Parte 2:</p>
+<div class="language-css highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nt">html</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">    </span><span class="nv">--lumo-primary-color</span><span class="p">:</span><span class="w"> </span><span class="nb">hsl</span><span class="p">(</span><span class="mi">173</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="kt">%</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="kt">%</span><span class="p">);</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="nv">--lumo-primary-color-50pct</span><span class="p">:</span><span class="w"> </span><span class="nb">hsla</span><span class="p">(</span><span class="mi">173</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="kt">%</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="kt">%</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">);</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="nv">--lumo-primary-color-10pct</span><span class="p">:</span><span class="w"> </span><span class="nb">hsla</span><span class="p">(</span><span class="mi">173</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="kt">%</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="kt">%</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">);</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="nv">--lumo-primary-text-color</span><span class="p">:</span><span class="w"> </span><span class="nb">hsl</span><span class="p">(</span><span class="mi">173</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="kt">%</span><span class="p">,</span><span class="w"> </span><span class="mi">21</span><span class="kt">%</span><span class="p">);</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="nv">--lumo-primary-contrast-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#ffffff</span><span class="p">;</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>El color exacto no importa para este ejercicio, usa el que quieras. Guarda,
+recarga la aplicación, y fíjate en tres lugares a la vez: el botón
+Guardar, el botón <code>+</code> de la barra de productos, y el ítem activo del menú
+lateral cambian de color, sin que hayas tocado una sola línea de Java ni
+ninguna regla de la Parte 2.</p>
+<p>Ese es el pago de una decisión que ya tomaste sin saberlo: <code>saveButton</code> y
+<code>addButton</code> usan <code>ButtonVariant.LUMO_PRIMARY</code> desde la Parte 1, así que su
+fondo sale de <code>--lumo-primary-color</code> y su texto de
+<code>--lumo-primary-contrast-color</code>. El ítem activo del <code>SideNav</code> funciona
+igual por defecto en Lumo: fondo con <code>--lumo-primary-color-10pct</code>, texto
+con <code>--lumo-primary-text-color</code>. Ninguno de los tres sabe ni le importa
+qué valor tienen esas variables hoy: cuando el valor cambia, ellos
+cambian con él.</p>
+<div class="admonition tip">
+<p class="admonition-title">¿Y el resaltado de bajo stock?</p>
+<p>Si comparas con atención, notarás que <code>vaadin-grid::part(low-stock-row)</code>
+no cambió de color. Es intencional: esa regla usa
+<code>--lumo-error-color-10pct</code> (Parte 2), no una variable de color
+primario. Es una advertencia semántica, no parte de tu marca, y no
+tendría sentido que cambiara solo porque cambiaste tu paleta. Separar
+"color de marca" de "color de estado" (error, éxito, advertencia) es
+justamente lo que te permite tener ambos a la vez sin que se pisen.</p>
+</div>
+<div class="admonition abstract">
+<p class="admonition-title">Vaadin al paso: los sufijos <code>-50pct</code> y <code>-10pct</code></p>
+<p><code>--lumo-primary-color-50pct</code> y <code>--lumo-primary-color-10pct</code> no son
+colores nuevos: son el mismo <code>--lumo-primary-color</code>, con la opacidad
+reducida al 50% y al 10%. Por eso en el bloque de arriba se escriben
+con <code>hsla(...)</code>, donde el cuarto valor es la opacidad. Lumo los usa
+para fondos sutiles, como el del ítem activo del menú, o para
+resaltados de foco y <code>:hover</code>.</p>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">Fondo y texto son variables distintas</p>
+<p><code>--lumo-primary-color</code> pinta fondos, como el del botón Guardar.
+<code>--lumo-primary-text-color</code> pinta texto, como el del ítem activo del
+menú. Son dos valores independientes: si solo redefines uno, el
+resultado queda a medias, con un color nuevo en el fondo y el azul
+por defecto de Lumo todavía en el texto (o al revés).</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">La paleta por defecto cumple WCAG, la tuya no automáticamente</p>
+<p>La paleta original de Lumo cumple el criterio de contraste de WCAG
+2.0 nivel AA (una relación de al menos 4.5:1 entre texto y fondo). Al
+reemplazar <code>--lumo-primary-color</code> o <code>--lumo-primary-text-color</code> con
+tus propios valores, esa garantía se pierde: nada impide elegir, por
+ejemplo, un texto blanco sobre un fondo amarillo pálido, ilegible
+para buena parte de tus usuarios. Verifica el contraste de tu paleta
+con una herramienta como el <a href="https://webaim.org/resources/contrastchecker/">contrast checker de
+WebAIM</a> antes de
+darla por buena.</p>
+</div>
+<p><img alt="Tu paleta de marca aplicada a StockPilot" src="../images/sesion8-marca-propia.png" /></p>
+<p>Esto es apenas el color primario. Si quieres seguir explorando (tipografía,
+radios de borde, colores de superficie y de contraste), la
+<a href="https://vaadin.com/docs/latest/styling/lumo/lumo-style-properties/color">documentación de propiedades de color de
+Lumo</a>
+lista todas las variables disponibles.</p>
+<hr />
+<h2 id="parte-4-el-precio-tambien-formateado-en-el-grid">Parte 4: El precio, también formateado en el Grid<a class="headerlink" href="#parte-4-el-precio-tambien-formateado-en-el-grid" title="Permanent link">&para;</a></h2>
+<p>Un último detalle suelto: en el Grid, el precio sale como <code>149900.00</code>,
+mientras que en el formulario y en los KPIs ya se ve formateado como
+moneda. <code>ProductListView</code> ya tiene el método que hace esa conversión,
+<code>formatCurrency</code>, desde la Sesión 3: solo hace falta usarlo también en la
+columna.</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">grid</span><span class="p">.</span><span class="na">addColumn</span><span class="p">(</span><span class="n">row</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">formatCurrency</span><span class="p">(</span><span class="n">row</span><span class="p">.</span><span class="na">unitPrice</span><span class="p">()))</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">        </span><span class="p">.</span><span class="na">setHeader</span><span class="p">(</span><span class="s">"Precio"</span><span class="p">)</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">        </span><span class="p">.</span><span class="na">setSortable</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">        </span><span class="p">.</span><span class="na">setComparator</span><span class="p">(</span><span class="n">ProductRow</span><span class="p">::</span><span class="n">unitPrice</span><span class="p">);</span>
+</span></code></pre></div>
+<div class="admonition danger">
+<p class="admonition-title">Sin <code>setComparator</code>, el orden de la columna se rompe</p>
+<p><code>addColumn(ValueProvider&lt;T, ?&gt;)</code> con una función que devuelve un
+<code>String</code> (como esta, que arma el texto formateado) hace que el Grid
+ordene esa columna alfabéticamente por defecto, comparando el texto
+que ves, no el número que representa. <code>"$99.900"</code> puede terminar antes
+que <code>"$149.900"</code> en un orden alfabético, aunque numéricamente sea al
+revés. <code>setComparator(ProductRow::unitPrice)</code> le dice al Grid,
+explícitamente, que ordene por el <code>BigDecimal</code> real, no por el texto
+formateado que se ve en pantalla. Es un tropiezo clásico de cualquier
+columna formateada, no solo de esta: cada vez que le des a una columna
+un <code>ValueProvider</code> que devuelve texto derivado de un número, revisa si
+hace falta un <code>setComparator</code> al lado.</p>
+</div>
+<p>Corre la aplicación, ordena por precio, y confirma que el orden es
+numérico y que los valores se ven con el mismo formato que el resto de la
+aplicación.</p>
 <hr />
 <h2 id="cierre-stockpilot-completo">Cierre: StockPilot completo<a class="headerlink" href="#cierre-stockpilot-completo" title="Permanent link">&para;</a></h2>
 <p>Con esto, StockPilot tiene Grid con búsqueda reactiva, KPIs computados,
 formulario validado, alta y baja, base de datos real, navegación entre dos
 funcionalidades, y un tema propio, todo en Java, todo organizado por
 funcionalidad de negocio.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>git<span class="w"> </span>add<span class="w"> </span>.
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"sesion-8: theming, CSS y marca propia"</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>git<span class="w"> </span>branch<span class="w"> </span>sesion-8
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>git<span class="w"> </span>branch<span class="w"> </span>-f<span class="w"> </span>main<span class="w"> </span>sesion-8
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>git<span class="w"> </span>add<span class="w"> </span>.
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"sesion-8: theming, CSS y marca propia"</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>git<span class="w"> </span>branch<span class="w"> </span>sesion-8
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>git<span class="w"> </span>branch<span class="w"> </span>-f<span class="w"> </span>main<span class="w"> </span>sesion-8
 </span></code></pre></div>
 <p>Mira las <a href="../referencias/">Referencias</a> para seguir profundizando.</p>
 
