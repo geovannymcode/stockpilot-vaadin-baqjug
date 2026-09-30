@@ -28,7 +28,7 @@
 
 ## Organizar el código por funcionalidad (package-by-feature)
 
-Package-by-feature (también llamado "package by component" o, en su
+[Package-by-feature](https://phauer.com/2020/package-by-feature/) (también llamado "package by component" o, en su
 versión más completa, "vertical slice architecture") es un patrón de
 organización de código discutido ampliamente en la comunidad de Spring y
 Java como alternativa a la separación tradicional por capas técnicas

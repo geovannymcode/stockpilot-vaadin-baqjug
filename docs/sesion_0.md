@@ -176,6 +176,83 @@ Marketplace antes de la Sesión 1:
     propiedades). Sin el segundo, VS Code no te resalta ni autocompleta
     nada de Spring.
 
+### Configurar la ruta del JDK a mano en VS Code
+
+A veces VS Code no detecta solo el JDK 25 recién instalado, sobre todo si
+tienes varias versiones de Java conviviendo en tu equipo (por ejemplo,
+instaladas con SDKMAN). Si te pasa esto, puedes indicarle la ruta exacta
+a mano.
+
+**Paso 1: abre `settings.json`**
+
+Abre la paleta de comandos (`Cmd + Shift + P` en macOS, `Ctrl + Shift + P`
+en Windows), escribe `Preferences: Open User Settings (JSON)` (o
+`Preferencias: Abrir configuración del usuario (JSON)` si tu editor está
+en español) y selecciona esa opción.
+
+**Paso 2: identifica la ruta de instalación de tu Java 25**
+
+=== "macOS / Linux (con SDKMAN)"
+
+    ```bash
+    ls ~/.sdkman/candidates/java/
+    ```
+
+    La ruta completa sigue el formato
+    `/Users/TU_USUARIO/.sdkman/candidates/java/NOMBRE_DE_LA_CARPETA`.
+
+=== "Windows"
+
+    Si lo instalaste con el ejecutable tradicional, la ruta suele ser
+    `C:\Program Files\Java\jdk-25` (o similar).
+
+**Paso 3: agrega la configuración al JSON**
+
+Busca la propiedad `java.configuration.runtimes` en tu `settings.json`.
+Si no existe, agrégala antes de la última llave de cierre `}`.
+
+=== "macOS / Linux"
+
+    ```json
+    "java.configuration.runtimes": [
+      {
+        "name": "JavaSE-25",
+        "path": "/Users/TU_USUARIO/.sdkman/candidates/java/NOMBRE_DE_LA_CARPETA",
+        "default": true
+      }
+    ]
+    ```
+
+=== "Windows"
+
+    ```json
+    "java.configuration.runtimes": [
+      {
+        "name": "JavaSE-25",
+        "path": "C:\\Program Files\\Java\\jdk-25",
+        "default": true
+      }
+    ]
+    ```
+
+!!! danger "En el JSON de Windows, usa doble barra invertida `\\`"
+    Una sola barra invertida `\` no sirve, porque en JSON es un carácter
+    de escape. `C:\\Program Files\\Java\\jdk-25` es lo correcto.
+
+**Paso 4: limpia el caché de Java (este paso no es opcional)**
+
+Guarda `settings.json`, abre de nuevo la paleta de comandos, escribe
+`Java: Clean Workspace` y presiona Enter. Confirma con el botón
+**Restart and clean** que aparece en la esquina inferior derecha. Sin
+este paso, VS Code sigue usando la configuración de Java que tenía en
+memoria, aunque ya hayas guardado la ruta nueva.
+
+Cuando VS Code termine de reiniciar, ya puedes correr y debuggear el
+proyecto directamente desde ahí: con el Spring Boot Extension Pack
+instalado, vas a tener un panel **Spring Boot Dashboard** con tu
+aplicación listada, y la inicias con el ícono de play, sin pasar por la
+terminal.
+
 ### Un navegador moderno
 
 Cualquiera sirve. Vaadin no requiere ninguna extensión ni configuración
