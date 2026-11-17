@@ -1,8 +1,16 @@
-# StockPilot: inventario en Java puro con Vaadin Flow
+# CRM interno en Java puro con Vaadin Flow
 
-Guía paso a paso (MkDocs Material) para construir un catálogo de inventario
-con Vaadin Flow, Spring Boot y arquitectura package-by-feature, sin separar
-el proyecto en frontend y backend.
+Guía (MkDocs Material) de un taller de 70 minutos: un CRM de clientes con
+Grid, búsqueda reactiva con Signals, formulario validado con Binder, base
+de datos real con Spring Data JPA, navegación y tema Aura propio. Todo en
+Java, sin un frontend separado.
+
+Stack: Java 25 · Spring Boot 4.1 · Vaadin 25.2 · H2.
+
+Sigue el orden del tutorial de introducción a Vaadin Flow de Drew Harvey
+([texto](https://drewharvey.github.io/vaadin-intro-tutorial/),
+[código](https://github.com/drewharvey/vaadin-intro-tutorial)), adaptado
+al español.
 
 ## Ver la guía localmente
 
@@ -15,27 +23,29 @@ Abre `http://localhost:8000`.
 
 ## Publicarla en GitHub Pages
 
-El workflow en `.github/workflows/main.yml` ya está listo: cada push a
-`main` publica el sitio con `mkdocs gh-deploy`. Solo necesitas:
+El workflow en `.github/workflows/main.yml` publica el sitio con
+`mkdocs gh-deploy` en cada push a `main`. Solo necesitas:
 
 1. Crear el repo en GitHub con el nombre que pusiste en `site_url` y
-   `repo_url` dentro de `mkdocs.yml` (o editar esos dos valores si usás
-   otro nombre).
-2. Habilitar GitHub Pages para la rama `gh-pages` en la configuración del
-   repo (Settings → Pages).
+   `repo_url` dentro de `mkdocs.yml` (o editar esos dos valores).
+2. Habilitar GitHub Pages para la rama `gh-pages` (Settings → Pages).
 3. Hacer push a `main`.
 
 ## Estructura
 
 ```
 docs/
-  index.md          ← portada: el problema, por qué Vaadin, qué vamos a construir
-  sesion_0.md ... sesion_8.md
+  index.md          ← portada: el problema, la agenda de 70 min y las versiones
+  sesion_0.md       ← preparación (antes del taller): proyecto y backend listos
+  sesion_1.md ... sesion_8.md
   referencias.md
-  images/           ← tus capturas de pantalla (ver docs/images/README.md)
+  images/           ← capturas por sesión (ver docs/images/README.md)
+presentacion/
+  StockPilot_Taller_Vaadin.pptx        ← diapositivas de apertura
+  guion-facilitador-vaadin-completo.md ← guion en vivo, con tiempos por sesión
 mkdocs.yml
 ```
 
-El proyecto de código en sí (el que vas a construir siguiendo esta guía)
-es un repo Maven aparte: esta guía no lo incluye como código listo para
-correr, la idea es que lo construyas tú mismo, sesión por sesión.
+El proyecto de código no está en este repo: cada asistente lo genera en
+[start.vaadin.com](https://start.vaadin.com) y lo construye sesión por
+sesión, con un commit al cierre de cada una.
